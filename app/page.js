@@ -1,14 +1,16 @@
 import {
-  CreateUser,
-  CreateUsers,
-  DeleteUser,
-  UpdateUser,
-  UpdateUsers,
+  addToCart,
+  createUser,
+  createUsers,
+  deleteUser,
+  updateUser,
+  updateUsers,
+  createProduct,
 } from "./_lib/actions";
 
 const Home = async function () {
   return (
-    <form action={DeleteUser}>
+    <form action={createProduct}>
       <p>KickFlow</p>
       <button>change user</button>
     </form>
