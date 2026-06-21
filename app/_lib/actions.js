@@ -203,7 +203,85 @@ export const updateProduct = async function () {
   if (error) throw new Error("Could Not Update Product. 😕");
 };
 
-const sneakers = [];
+const sneakers = [
+  {
+    name: "Timberland 10073001 Premium Boot",
+    brand: "Timberland",
+    color: "Black / Dark Grey",
+    size: 6,
+    price: 3200,
+    description:
+      "Classic waterproof premium leather boot with rugged outdoor design.",
+    stock: "In stock",
+    images: [
+      "https://timberland.co.za/cdn/shop/files/10073001-HERO_f63ceee2-51ae-4139-97cc-15801959017a.png",
+      "https://timberland.co.za/cdn/shop/files/10073001-ALT2.png",
+      "https://timberland.co.za/cdn/shop/files/10073001-ALT4_ee906925-0c3f-4245-af2e-2f406404b45002.png",
+      "https://timberland.co.za/cdn/shop/files/10073001-ALT5.png",
+      "https://timberland.co.za/cdn/shop/files/10073001-ALT6.png",
+    ],
+    category: "Boots",
+    wishlist: false,
+    rate: 4.7,
+    sale: false,
+    discount: 0,
+    numRemaining: 15,
+    reviews: "Iconic durable Timberland boot for everyday and outdoor use.",
+    addToCart: false,
+  },
+  {
+    name: "Timberland 72066 EBL Premium Boot",
+    brand: "Timberland",
+    color: "Wheat / Yellow",
+    size: 7,
+    price: 2900,
+    description:
+      "Rugged waterproof boot designed for durability and urban outdoor wear.",
+    stock: "In stock",
+    images: [
+      "https://timberland.co.za/cdn/shop/files/72066EBL-HERO.jpg",
+      "https://timberland.co.za/cdn/shop/files/72066EBL-ALT2.jpg",
+      "https://timberland.co.za/cdn/shop/files/72066EBL-ALT4.jpg",
+    ],
+    category: "Boots",
+    wishlist: false,
+    rate: 4.6,
+    sale: false,
+    discount: 0,
+    numRemaining: 12,
+    reviews: "Strong build quality and great for outdoor conditions.",
+    addToCart: false,
+  },
+  {
+    name: "Timberland A2P6WA4E Boot",
+    brand: "Timberland",
+    color: "White",
+    size: 9,
+    price: 3400,
+    description:
+      "Premium Timberland boot designed for durability and everyday outdoor wear.",
+    stock: "In stock",
+
+    images: [
+      "https://timberland.co.za/cdn/shop/files/A2P6WA4E-HERO.jpg?v=1762773002&width=3840",
+      "https://timberland.co.za/cdn/shop/files/A2P6WA4E-ALT2.jpg?v=1763730429&width=3840",
+      "https://timberland.co.za/cdn/shop/files/A2P6WA4E-ALT4.jpg?v=1763730429&width=3840",
+      "https://timberland.co.za/cdn/shop/files/A2P6WA4E-ALT5.jpg?v=1763730429&width=3840",
+      "https://timberland.co.za/cdn/shop/files/A2P6WA4E-ALT6.jpg?v=1763730429&width=3840",
+      "https://timberland.co.za/cdn/shop/files/A2P6WA4E-ALT7.jpg?v=1763730429&width=3840",
+      "https://timberland.co.za/cdn/shop/files/A2P6WA4E-ALT8.jpg?v=1763730429&width=3840",
+    ],
+
+    category: "Boots",
+    wishlist: false,
+    rate: 4.5,
+    sale: false,
+    discount: 0,
+    numRemaining: 10,
+    reviews: "Durable construction with classic Timberland styling.",
+    addToCart: false,
+  },
+];
 
 export const updateProducts = async function () {
   const { error } = await prisma.product.updateMany({

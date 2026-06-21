@@ -30,11 +30,11 @@ model Product{
   name String
   brand String
   color String
-  size Int
+  size Int[]
   price Int @default(0)
   description String @db.VarChar(150)
   stock String @default("In stock")
-  image String 
+  image String[]
   category String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
