@@ -1,9 +1,3 @@
-
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,71 +7,93 @@ datasource db {
 }
 
 model User {
-  id Int @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  createdAt DateTime @default(now())
+  id        Int      @id @default(autoincrement())
+  updatedAt DateTime @updatedAt
+  avatar    String?
+  role      String   @default("USER")
+  addresses Address?
+  cart      Cart?
+  order     Order?
+}
+
+model Product {
+  id           Int          @id @default(autoincrement())
+  name         String
+  brand        String
+  color        String
+  price        Int          @default(0)
+  description  String       @db.VarChar(150)
+  stock        String       @default("In stock")
+  category     String
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  wishlist     Boolean      @default(false)
+  rate         Float        @default(0)
+  sale         Boolean      @default(false)
+  discount     Int          @default(0)
+  numRemaining Int
+  reviews      String?      @db.VarChar(200)
+  size         Int[]
+  image        String[]
+  cartItem     CartItems[]
+  orderItems   OrderItems[]
+}
+
+model Cart {
+  id        Int         @id @default(autoincrement())
+  userID    Int         @unique
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  user      User        @relation(fields: [userID], references: [id])
+  items     CartItems[]
+}
+
+model CartItems {
+  id        Int      @id @default(autoincrement())
+  cartID    Int
+  productID Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  name String
-  email String @unique
-  avatar String?
-  role String @default("USER")
-  addresses Address[]
-  cart Cart?
-  order Order[]
+  quantity  Int      @default(1)
+  cart      Cart     @relation(fields: [cartID], references: [id])
+  product   Product  @relation(fields: [productID], references: [id])
+
+  @@unique([cartID, productID])
 }
 
-model Product{
-  id Int @id @default(autoincrement())
-  name String
-  brand String
-  color String
-  size Int[]
-  price Int @default(0)
-  description String @db.VarChar(150)
-  stock String @default("In stock")
-  image String[]
-  category String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  wishlist Boolean @default(false)
-  rate Float @default(0)
-  sale Boolean @default(false)
-  discount Int @default(0)
-  numRemaining Int  
-  reviews String? @db.VarChar(200)
-  addToCart Boolean @default(false)
-  cartItem CartItems[]
-  orderItems OrderItems[]
-}
-
-model Cart{
-id Int @id @default(autoincrement())
-userID Int @unique
-createdAt DateTime @default(now())
-updatedAt DateTime @updatedAt
-user User @relation(fields: [userID],references: [id])
-items CartItems[]
-}
-
-model CartItems{
-id Int @id @default(autoincrement())
-cartID Int @unique
-productID Int @unique
-createdAt DateTime @default(now())
-updatedAt DateTime @updatedAt
-quantity Int @default(1)
-cart Cart @relation(fields: [cartID],references: [id])
-product Product @relation(fields: [productID],references: [id])
-}
-
-model Address{
-  id Int @id @default(autoincrement())
-  userID Int @unique
-  street String
-  city String
+model Address {
+  id         Int    @id @default(autoincrement())
+  userID     Int    @unique
+  street     String
+  city       String
   postalCode Int
-  country String
-  user User @relation(fields: [userID],references: [id])
-  order Order[]
+  country    String
+  user       User   @relation(fields: [userID], references: [id])
+  order      Order?
+}
+
+model Order {
+  id         Int          @id @default(autoincrement())
+  addressID  Int          @unique
+  userID     Int          @unique
+  status     OrderStatus  @default(PENDING)
+  totalPrice Float        @default(0)
+  address    Address      @relation(fields: [addressID], references: [id])
+  user       User         @relation(fields: [userID], references: [id])
+  items      OrderItems[]
+}
+
+model OrderItems {
+  id        Int     @id @default(autoincrement())
+  orderID   Int
+  productID Int
+  quantity  Int
+  price     Float
+  order     Order   @relation(fields: [orderID], references: [id])
+  product   Product @relation(fields: [productID], references: [id])
 }
 
 enum OrderStatus {
@@ -86,28 +102,6 @@ enum OrderStatus {
   SHIPPED
   DELIVERED
   CANCELLED
-}
-
-model Order{
-id Int @id @default(autoincrement())
-addressID Int @unique
-userID Int @unique
-user User @relation(fields: [userID],references: [id])
-address Address @relation(fields: [addressID],references: [id])
-status OrderStatus @default(PENDING)
-totalPrice Float @default(0)
-items OrderItems[]
-}
-
-
-model OrderItems {
-  id        Int    @id @default(autoincrement())
-  orderID   Int
-  order     Order  @relation(fields: [orderID], references: [id])
-  productID Int
-  product   Product @relation(fields: [productID], references: [id])
-  quantity  Int
-  price     Float
 }
 
 enum Role {

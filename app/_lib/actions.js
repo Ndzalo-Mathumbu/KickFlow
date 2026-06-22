@@ -1,5 +1,5 @@
 "use server";
-import { getCart, getUser, prisma } from "./data-service";
+import { getCart, getCartItems, getUser, prisma } from "./data-service";
 
 // UpdateUser
 export const updateUser = async function (userID) {
@@ -129,6 +129,64 @@ export const createCart = async function (formData, userID) {
   const id = formData.get("test");
   await prisma.cart.create({ data: { userID: Number(id) } });
 };
+
+//Create Cart Items or Add items to cart
+export const createCartItems = async function (productID, userID) {
+  const cart = await getCart(userID);
+  if (!cart) {
+    console.log("not cart");
+    return;
+  }
+  const { id } = cart;
+
+  await prisma.cartItems.upsert({
+    where: { cartID_productID: { cartID: Number(id), productID } },
+    update: { quantity: { increment: 1 } },
+    create: { cartID: Number(id), productID: Number(productID) },
+  });
+};
+
+//Delete Cart Items
+export const deleteCartItems = async function (formData) {
+  const userid = formData.get("test");
+
+  const productID = formData.get("test2");
+  const cart = await getCart(Number(userid));
+  if (!cart) {
+    console.log("not cart");
+    return;
+  }
+  const { id: cartID } = cart;
+  const cartItem = await getCartItems(productID, cartID);
+
+  if (!cartItem) return;
+  if (cartItem.quantity === 1) {
+    await prisma.cartItems.delete({
+      where: {
+        cartID_productID: {
+          cartID: Number(cartID),
+          productID: Number(productID),
+        },
+      },
+    });
+  } else {
+    await prisma.cartItems.update({
+      where: {
+        cartID_productID: {
+          cartID: Number(cartID),
+          productID: Number(productID),
+        },
+      },
+      data: {
+        quantity: {
+          decrement: 1,
+        },
+      },
+    });
+  }
+
+  console.log(cartItem);
+};
 // Add A Product To Cart
 export const addToCart = async function (
   formData,
@@ -142,21 +200,11 @@ export const addToCart = async function (
   const { role } = await getUser(Number(id));
   if (role === "ADMIN") return;
 
-  const userHasCart = await prisma?.cart?.findUnique({
-    where: { userID: Number(id) },
-  });
+  const userHasCart = await getCart(Number(id));
 
-  if (userHasCart) return;
-  await prisma?.cart?.create({ data: { userID: Number(id) } });
-  // const { idd } = await getCart(Number(id));
+  if (!userHasCart) {
+    await prisma?.cart?.create({ data: { userID: Number(id) } });
+  }
 
-  const { error } = await prisma?.product?.update({
-    where: { id: Number(Pid) },
-    data: { addToCart: true },
-  });
-  /* await prisma?.cartItems?.create({
-    data: { productID: Number(Pid), cartID: idd },
-  }); */
-
-  if (error) throw new Error("Could Not Add To Cart. 😕");
+  await createCartItems(Number(Pid), Number(id));
 };

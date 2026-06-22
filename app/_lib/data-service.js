@@ -5,22 +5,34 @@ const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
 export const prisma = new PrismaClient({ adapter });
 
 export const getUser = async function (userID) {
-  const user = await prisma.user.findUnique({ where: { id: userID } });
+  const user = await prisma.user.findUnique({ where: { id: Number(userID) } });
   return user;
 };
 
 export const getProduct = async function (productID) {
-  const product = await prisma.product.findUnique({ where: { id: productID } });
+  const product = await prisma.product.findUnique({
+    where: { id: Number(productID) },
+  });
   return product;
 };
 
 export const getCart = async function (userID) {
-  const cart = await prisma.cart.findUnique({ where: { userID } });
+  const cart = await prisma.cart.findUnique({
+    where: { userID: Number(userID) },
+  });
   return cart;
 };
-const { id } = await getCart(84);
-console.log(id);
-const items = await prisma.cartItems.findMany();
-console.log(items);
-const shoe = await getProduct(99);
-console.log(shoe);
+
+export const getCartItems = async function (productID, cartID) {
+  const itemsInCart = await prisma.cartItems.findUnique({
+    where: {
+      cartID_productID: {
+        productID: Number(productID),
+        cartID: Number(cartID),
+      },
+    },
+  });
+  return itemsInCart;
+};
+/* const shoe = await getProduct(99);
+console.log(shoe); */
