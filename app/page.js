@@ -17,11 +17,11 @@ import {
 
 const Home = async function () {
   return (
-    <form action={selectAddress}>
-      <input type="hidden" name="test" value="119" />
-      <input type="hidden" name="test2" value="60" />
-      <input type="radio" name="preferedAdress" value="29" />
-      <input type="radio" name="preferedAdress" value="33" />
+    <form action={checkOut}>
+      <input type="hidden" name="userID" value="93" />
+      <input type="hidden" name="productID" value="54" />
+      <input type="radio" name="preferedAddress" value="46" />
+      <input type="radio" name="preferedAddress" value="47" />
 
       <label htmlFor="country">Country</label>
       <input

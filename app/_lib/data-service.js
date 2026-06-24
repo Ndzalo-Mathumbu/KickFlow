@@ -1,6 +1,5 @@
 import { PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
-import { get } from "node:http";
 
 const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
 export const prisma = new PrismaClient({ adapter });
@@ -48,6 +47,16 @@ export const getUserAddress = async function (id) {
   return userAddress;
 };
 
+//Find the first address created by user so it's the one in order by default
+export const getFirstCreatedAddress = async function (userID) {
+  const firstUserAddress = await prisma.address.findFirst({
+    orderBy: { createdAt: "desc" },
+    where: { userID: Number(userID) },
+  });
+  return firstUserAddress;
+};
+
+// Get duplicated address
 export const getDuplicateAddress = async function (
   country,
   postalCode,
@@ -61,16 +70,21 @@ export const getDuplicateAddress = async function (
   return addressExist;
 };
 
-//Get User Addresses To Find User's Available addresses So user can select prefered delivery location
-export const getUserAddresses = async function (userID) {
-  const availableAddresses = await prisma.address.findMany({
-    where: { userID },
+export const getTotalProductPrice = async function (userID) {
+  const { id: cartID } = await getCart(Number(userID));
+  const totalPrice = await prisma.cart.findUnique({
+    where: { id: Number(cartID) },
+    include: { items: { include: { product: true } } },
   });
-  return availableAddresses;
+
+  const accumulatedPrice = totalPrice.items.reduce((accum, cur) => {
+    return accum + cur.product.price * cur.quantity;
+  }, 0);
+
+  return accumulatedPrice;
 };
 
-const foundAddresses = await getUserAddresses(119);
-// console.log(foundAddresses, "testtttt");
-
-/* const shoe = await getProduct(99);
-console.log(shoe); */
+export const getOrder = async function (userID) {
+  const orderAvailable = await prisma.order.findUnique({ where: { userID } });
+  return orderAvailable;
+};
