@@ -1,5 +1,12 @@
 "use server";
-import { getCart, getCartItems, getUser, prisma } from "./data-service";
+import {
+  getCart,
+  getCartItems,
+  getDuplicateAddress,
+  getUser,
+  getUserAddress,
+  prisma,
+} from "./data-service";
 
 // UpdateUser
 export const updateUser = async function (userID) {
@@ -125,6 +132,7 @@ export const deleteProducts = async function () {
   await prisma.product.deleteMany({});
 };
 
+// Create a Cart
 export const createCart = async function (formData, userID) {
   const id = formData.get("test");
   await prisma.cart.create({ data: { userID: Number(id) } });
@@ -207,4 +215,89 @@ export const addToCart = async function (
   }
 
   await createCartItems(Number(Pid), Number(id));
+};
+
+//Checkout
+export const checkOut = async function (formData) {
+  const getFormDataValue = function (fieldName) {
+    const value = formData.get(fieldName);
+
+    if (typeof value !== "string" || value.trim() === "") {
+      throw new Error(`${fieldName} is required.`);
+    }
+
+    return value.trim();
+  };
+
+  const country = getFormDataValue("country");
+  const city = getFormDataValue("city");
+  const street = getFormDataValue("street");
+  const postalCode = Number(getFormDataValue("postalCode"));
+  const userID = Number(formData.get("test") ?? 94);
+
+  if (!Number.isInteger(postalCode)) {
+    throw new Error("postalCode must be a number.");
+  }
+
+  if (!Number.isInteger(userID)) {
+    throw new Error("userID must be a number.");
+  }
+
+  const user = await getUser(userID);
+
+  if (!user) {
+    throw new Error("User not found.");
+  }
+
+  const addressExist = await getDuplicateAddress(
+    country,
+    postalCode,
+    city,
+    street,
+    userID,
+  );
+
+  if (addressExist) {
+    throw new Error("Address already created");
+  }
+
+  await prisma.address.create({
+    data: { country, postalCode, city, street, userID },
+  });
+};
+
+export const selectAddress = async function (formData) {
+  const getFormDataValue = function (inputName) {
+    const value = formData.get(inputName);
+    if (typeof value !== "string" || value.trim() === "") {
+      throw new Error(`${fieldName} is required.`);
+    }
+
+    return value.trim();
+  };
+
+  const preferedAdress = getFormDataValue("preferedAdress");
+  const userID = Number(getFormDataValue("test") ?? 119);
+
+  if (!Number.isInteger(userID)) {
+    throw new Error("userID must be a number.");
+  }
+
+  if (!preferedAdress || !Number.isInteger(Number(preferedAdress))) {
+    throw new Error("Please select a delivery address.");
+  }
+
+  const selectedAddress = await getUserAddress(preferedAdress);
+
+  if (!selectedAddress || selectedAddress.userID !== userID) {
+    throw new Error("Selected address not found.");
+  }
+
+  await prisma.order.upsert({
+    where: { userID },
+    update: {
+      addressID: selectedAddress.id,
+    },
+    create: { userID: selectedAddress.userID, addressID: selectedAddress.id },
+  });
 };
