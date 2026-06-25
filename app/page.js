@@ -11,17 +11,21 @@ import {
   createCart,
   createCartItems,
   deleteCartItems,
-  checkOut,
+  createAddress,
+  checkout,
   selectAddress,
+  deleteOrderItem,
+  deleteOrderItems,
 } from "./_lib/actions";
 
 const Home = async function () {
   return (
-    <form action={checkOut}>
+    <form action={deleteOrderItems}>
       <input type="hidden" name="userID" value="93" />
-      <input type="hidden" name="productID" value="54" />
+      <input type="hidden" name="productID" value="40" />
+      <input type="hidden" name="orderItemID" value="18" />
       <input type="radio" name="preferedAddress" value="46" />
-      <input type="radio" name="preferedAddress" value="47" />
+      <input type="radio" name="preferedAddress" value="51" />
 
       <label htmlFor="country">Country</label>
       <input

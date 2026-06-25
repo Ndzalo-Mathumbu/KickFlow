@@ -39,6 +39,16 @@ export const getCartItems = async function (productID, cartID) {
   return itemsInCart;
 };
 
+//Find All Products In Cart For OrderItems
+export const getAllCartitems = async function (userID) {
+  const { id: cartID } = await getCart(Number(userID));
+  const itemsInCart = await prisma.cartItems.findMany({
+    where: { cartID: Number(cartID) },
+    include: { product: true },
+  });
+  return itemsInCart;
+};
+
 //Get User Address
 export const getUserAddress = async function (id) {
   const userAddress = await prisma.address.findFirst({
@@ -50,7 +60,7 @@ export const getUserAddress = async function (id) {
 //Find the first address created by user so it's the one in order by default
 export const getFirstCreatedAddress = async function (userID) {
   const firstUserAddress = await prisma.address.findFirst({
-    orderBy: { createdAt: "desc" },
+    orderBy: { createdAt: "asc" },
     where: { userID: Number(userID) },
   });
   return firstUserAddress;
@@ -88,3 +98,11 @@ export const getOrder = async function (userID) {
   const orderAvailable = await prisma.order.findUnique({ where: { userID } });
   return orderAvailable;
 };
+
+/* export const getOrderItem = async function () {
+  const item = await prisma.orderItems.findUnique({
+    where: { id: Number(id) },
+  });
+  return item;
+};
+ */

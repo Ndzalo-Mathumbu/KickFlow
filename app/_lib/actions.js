@@ -1,10 +1,12 @@
 "use server";
 import {
+  getAllCartitems,
   getCart,
   getCartItems,
   getDuplicateAddress,
   getFirstCreatedAddress,
   getOrder,
+  getProduct,
   getTotalProductPrice,
   getUser,
   getUserAddress,
@@ -137,7 +139,7 @@ export const deleteProducts = async function () {
 
 // Create a Cart
 export const createCart = async function (formData) {
-  const userID = formData.get("test");
+  const userID = formData.get("userID");
   await prisma.cart.create({ data: { userID: Number(userID) } });
 };
 
@@ -163,8 +165,8 @@ export const createCartItems = async function (productID, userID) {
 
 //Delete Cart Items
 export const deleteCartItems = async function (formData) {
-  const userID = formData.get("test");
-  const productID = formData.get("test2");
+  const userID = formData.get("userID");
+  const productID = formData.get("productID");
 
   const cart = await getCart(userID);
   if (!cart) {
@@ -221,48 +223,26 @@ export const addToCart = async function (formData) {
   }
 
   await createCartItems(productID, userID);
-  /* const totalProductPrice = await getTotalProductPrice(userID);
-
-  const orderExist = await getOrder(userID);
-
-  if (orderExist) {
-    await prisma.order.update({
-      where: { id: orderExist.id },
-      data: { totalPrice: totalProductPrice },
-    });
-  } */
 };
 
-//Checkout
-export const checkOut = async function (formData) {
+//Create Address
+export const createAddress = async function (formData) {
   const getFormDataValue = function (input) {
     const value = formData.get(input);
-
     if (typeof value !== "string" || value.trim() === "") {
       throw new Error(`Kindly fill in all the address fields. 😕`);
     }
-
     return value.trim();
   };
 
+  const userID = Number(getFormDataValue("userID"));
   const country = getFormDataValue("country");
   const city = getFormDataValue("city");
   const street = getFormDataValue("street");
   const postalCode = Number(getFormDataValue("postalCode"));
-  const userID = Number(getFormDataValue("userID"));
 
   if (!Number.isInteger(postalCode)) {
     throw new Error("postalCode must be a number.");
-  }
-
-  if (!Number.isInteger(userID)) {
-    throw new Error("userID must be a number.");
-  }
-
-  const user = await getUser(userID);
-
-  if (!user) {
-    throw new Error("User not found. 😕");
   }
 
   const addressExist = await getDuplicateAddress(
@@ -277,29 +257,80 @@ export const checkOut = async function (formData) {
     throw new Error("Address already created.");
   }
 
-  await prisma.address.create({
+  const createdAddress = await prisma.address.create({
     data: { country, postalCode, city, street, userID },
   });
+  return createdAddress;
+};
+
+//create orderItems
+export const createOrderItems = async function (userID, cartID, productID) {
+  const { id: orderID } = await getOrder(userID);
+  const cartItemsAll = await getAllCartitems(userID);
+  return cartItemsAll.map(async (a) => {
+    await prisma.orderItems.create({
+      data: {
+        orderID,
+        productID: a.productID,
+        quantity: a.quantity,
+        price: a.product.price,
+      },
+    });
+  });
+};
+
+//Delete one orderItems
+export const deleteOrderItem = async function (formData) {
+  const orderItemID = formData.get("orderItemID");
+  await prisma.orderItems.delete({ where: { id: Number(orderItemID) } });
+};
+
+export const deleteOrderItems = async function () {
+  await prisma.orderItems.deleteMany({});
+};
+
+//Checkout
+export const checkout = async function (formData) {
+  const getFormDataValue = function (input) {
+    const value = formData.get(input);
+    return value;
+  };
+  const productID = getFormDataValue("productID");
+  const userID = Number(getFormDataValue("userID"));
+
+  const { id: cartID } = await getCart(Number(userID));
+
+  if (!Number.isInteger(userID)) {
+    throw new Error("userID must be a number.");
+  }
 
   const firstAddressCreated = await getFirstCreatedAddress(userID);
   if (!firstAddressCreated) {
-    throw new Error("Could not find your address. Try selecting manually. 😕");
+    throw new Error(
+      "Could not find your address. Try selecting manually or creating an address. 😕",
+    );
   }
 
   const totalProductPrice = await getTotalProductPrice(userID);
+  const order = await getOrder(userID);
 
-  await prisma.order.upsert({
-    where: { userID },
-    update: {
-      addressID: firstAddressCreated.id,
-      totalPrice: totalProductPrice,
-    },
-    create: {
-      addressID: firstAddressCreated.id,
-      userID: firstAddressCreated.userID,
-      totalPrice: totalProductPrice,
-    },
-  });
+  if (order) {
+    await prisma.order.update({
+      where: { id: order.id },
+      data: { totalPrice: totalProductPrice },
+    });
+  }
+  if (!order) {
+    await prisma.order.create({
+      data: {
+        addressID: firstAddressCreated.id,
+        userID: firstAddressCreated.userID,
+        totalPrice: totalProductPrice,
+      },
+    });
+  }
+
+  await createOrderItems(userID, cartID, productID);
 };
 
 export const selectAddress = async function (formData) {
@@ -328,18 +359,14 @@ export const selectAddress = async function (formData) {
     throw new Error("Selected address not found. 😕");
   }
 
-  const totalProductPrice = await getTotalProductPrice(userID);
-
   await prisma.order.upsert({
     where: { userID },
     update: {
       addressID: selectedAddress.id,
-      totalPrice: totalProductPrice,
     },
     create: {
       userID: selectedAddress.userID,
       addressID: selectedAddress.id,
-      totalPrice: totalProductPrice,
     },
   });
 };

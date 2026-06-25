@@ -75,7 +75,7 @@ model Address {
   order      Order[]
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
-  
+
 }
 
 model Order {
@@ -106,6 +106,7 @@ model OrderItems {
 
 enum OrderStatus {
   PENDING
+  PAID
   PACKED
   SHIPPED
   DELIVERED
