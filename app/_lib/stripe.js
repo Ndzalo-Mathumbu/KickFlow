@@ -4,8 +4,11 @@ export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 console.log(!!process.env.STRIPE_SECRET_KEY);
 
-export const createCheckoutSession = async (order, cartItemsAll) => {
-  console.log(order);
+export const createCheckoutSession = async (
+  orderID,
+  orderUserID,
+  cartItemsAll,
+) => {
   const session = await stripe.checkout.sessions.create({
     mode: "payment",
 
@@ -26,12 +29,17 @@ export const createCheckoutSession = async (order, cartItemsAll) => {
     })),
 
     metadata: {
-      orderID: Number(order.id),
-      userID: Number(order.userID),
+      orderID: Number(orderID),
+      userID: Number(orderUserID),
+    },
+
+    payment_intent_data: {
+      metadata: {
+        orderID: Number(orderID),
+      },
     },
 
     success_url: `${process.env.NEXT_PUBLIC_URL}/success`,
-
     cancel_url: `${process.env.NEXT_PUBLIC_URL}/cancel`,
   });
 

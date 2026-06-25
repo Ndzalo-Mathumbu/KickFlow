@@ -14,6 +14,7 @@ import {
   prisma,
 } from "./data-service";
 import { createCheckoutSession } from "./stripe";
+import { id } from "zod/v4/locales";
 
 // UpdateUser
 export const updateUser = async function (userID) {
@@ -317,24 +318,38 @@ export const checkout = async function (formData) {
   const order = await getOrder(userID);
 
   if (order) {
-    await prisma.order.update({
+    const { id: orderID, userID: orderUserID } = await prisma.order.update({
       where: { id: order.id },
       data: { totalPrice: totalProductPrice },
     });
+    const cartItemsAll = await getAllCartitems(userID);
+    const session = await createCheckoutSession(
+      orderID,
+      orderUserID,
+      cartItemsAll,
+    );
+    console.log(session);
+    await createOrderItems(userID, cartID, productID);
+    redirect(session?.url);
   }
   if (!order) {
-    await prisma.order.create({
+    const { id: orderID, userID: orderUserID } = await prisma.order.create({
       data: {
         addressID: firstAddressCreated.id,
         userID: firstAddressCreated.userID,
         totalPrice: totalProductPrice,
       },
     });
+    const cartItemsAll = await getAllCartitems(userID);
+    const session = await createCheckoutSession(
+      orderID,
+      orderUserID,
+      cartItemsAll,
+    );
+    console.log(session);
+    await createOrderItems(userID, cartID, productID);
+    redirect(session?.url);
   }
-  const cartItemsAll = await getAllCartitems(userID);
-  await createOrderItems(userID, cartID, productID);
-  const session = await createCheckoutSession(order, cartItemsAll);
-  console.log(session);
 };
 
 export const selectAddress = async function (formData) {
