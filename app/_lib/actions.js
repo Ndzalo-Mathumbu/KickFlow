@@ -1,4 +1,5 @@
 "use server";
+import { redirect } from "next/navigation";
 import {
   getAllCartitems,
   getCart,
@@ -12,6 +13,7 @@ import {
   getUserAddress,
   prisma,
 } from "./data-service";
+import { createCheckoutSession } from "./stripe";
 
 // UpdateUser
 export const updateUser = async function (userID) {
@@ -329,8 +331,10 @@ export const checkout = async function (formData) {
       },
     });
   }
-
+  const cartItemsAll = await getAllCartitems(userID);
   await createOrderItems(userID, cartID, productID);
+  const session = await createCheckoutSession(order, cartItemsAll);
+  console.log(session);
 };
 
 export const selectAddress = async function (formData) {

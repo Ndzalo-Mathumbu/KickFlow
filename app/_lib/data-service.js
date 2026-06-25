@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
+import { createCheckoutSession } from "./stripe";
 
 const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
 export const prisma = new PrismaClient({ adapter });
@@ -98,11 +99,3 @@ export const getOrder = async function (userID) {
   const orderAvailable = await prisma.order.findUnique({ where: { userID } });
   return orderAvailable;
 };
-
-/* export const getOrderItem = async function () {
-  const item = await prisma.orderItems.findUnique({
-    where: { id: Number(id) },
-  });
-  return item;
-};
- */

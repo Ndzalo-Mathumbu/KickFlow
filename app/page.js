@@ -20,7 +20,7 @@ import {
 
 const Home = async function () {
   return (
-    <form action={deleteOrderItems}>
+    <form action={checkout}>
       <input type="hidden" name="userID" value="93" />
       <input type="hidden" name="productID" value="40" />
       <input type="hidden" name="orderItemID" value="18" />
