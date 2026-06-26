@@ -14,34 +14,37 @@ import {
   prisma,
 } from "./data-service";
 import { createCheckoutSession } from "./stripe";
-import { id } from "zod/v4/locales";
+import { authOptions } from "../_lib/auth";
+import { getServerSession } from "next-auth";
+
+const session = await getServerSession(authOptions);
+console.log(session);
 
 // UpdateUser
 export const updateUser = async function (userID) {
   await prisma?.user?.update({
     where: { id: userID },
-    data: { name: "Ndzalo NK", email: "ndzalo@gmail.com", role: "admin" },
+    data: { name: "Ndzalo NK", email: "ndzalo@gmail.com", role: "ADMIN" },
   });
 };
 
 // UpdateUsers
 export const updateUsers = async function () {
   const { error } = await prisma?.user?.updateMany({
-    data: { name: "newName", role: "admin" },
+    data: { name: "newName", role: "ADMIN" },
   });
   if (error) throw new Error("Could Not Update Users. 😕");
 };
 
 // CreateUser
 export const createUser = async function () {
-  const { error } = await prisma?.user?.create({
+  /*  const { error } = await prisma?.user?.create({
     data: {
-      name: "john doe",
-      email: "doe@gmail.com",
-      avatar: "ooooooo",
-      role: "admin",
+      name: session.user.name,
+      email: session.user.email,
+      avatar: session.user.image,
     },
-  });
+  }); */
 
   if (error) throw new Error("Could Not Create User. 😕");
 };

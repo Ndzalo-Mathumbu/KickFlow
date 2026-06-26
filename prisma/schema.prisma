@@ -13,7 +13,7 @@ model User {
   id        Int      @id @default(autoincrement())
   updatedAt DateTime @updatedAt
   avatar    String?
-  role      String   @default("USER")
+  role      Role  @default(USER)
   address Address[]
   cart      Cart?
   order     Order[]
