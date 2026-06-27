@@ -17,6 +17,7 @@ model User {
   address Address[]
   cart      Cart?
   order     Order[]
+  welcomeMessage String? 
 }
 
 model Product {

@@ -18,35 +18,24 @@ import { authOptions } from "../_lib/auth";
 import { getServerSession } from "next-auth";
 
 const session = await getServerSession(authOptions);
-console.log(session);
+console.log(session, "test session...");
 
 // UpdateUser
-export const updateUser = async function (userID) {
+export const updateUser = async function () {
   await prisma?.user?.update({
-    where: { id: userID },
-    data: { name: "Ndzalo NK", email: "ndzalo@gmail.com", role: "ADMIN" },
+    where: { id: session.user.id },
+    data: { name: session.user.name, email: session.user.email, role: "ADMIN" },
   });
 };
 
 // UpdateUsers
 export const updateUsers = async function () {
-  const { error } = await prisma?.user?.updateMany({
+  const { error } = await prisma.user.updateMany({
     data: { name: "newName", role: "ADMIN" },
   });
-  if (error) throw new Error("Could Not Update Users. 😕");
-};
-
-// CreateUser
-export const createUser = async function () {
-  /*  const { error } = await prisma?.user?.create({
-    data: {
-      name: session.user.name,
-      email: session.user.email,
-      avatar: session.user.image,
-    },
-  }); */
-
-  if (error) throw new Error("Could Not Create User. 😕");
+  if (error) {
+    throw new Error("Could Not Update Users. 😕");
+  }
 };
 
 // CreateUsers
@@ -54,38 +43,58 @@ export const createUsers = async function () {
   const { error } = await prisma?.user?.createMany({
     data: [],
   });
-  if (error) throw new Error("Could Not Create Users. 😕");
+  if (error) {
+    throw new Error("Could Not Create Users. 😕");
+  }
 };
 
 // Delete One user
-export const deleteUser = async function (userID) {
-  await prisma?.user?.delete({ where: { id: userID } });
+export const deleteUser = async function () {
+  await prisma.user.delete({ where: { id: session.user.id } });
 };
 
 // DeleteUsers
 export const deleteUsers = async function () {
-  await prisma?.user?.deleteMany({});
+  await prisma.user.deleteMany({});
 };
 
 // Create One Product
-export const createProduct = async function () {
+export const createProduct = async function (formData) {
+  const getFormDataValue = function (input) {
+    const value = formData.get(input);
+    return value;
+  };
+  const name = getFormDataValue("name");
+  const brand = getFormDataValue("brand");
+  const color = getFormDataValue("color");
+  const size = getFormDataValue("size");
+  const price = getFormDataValue("price");
+  const description = getFormDataValue("description");
+  const image = getFormDataValue("image");
+  const category = getFormDataValue("category");
+  const wishlist = getFormDataValue("wishlist");
+  const rate = getFormDataValue("rate");
+  const sale = getFormDataValue("sale");
+  const discount = getFormDataValue("discount");
+  const numRemaining = getFormDataValue("numRemaining");
+  const reviews = getFormDataValue("reviews");
+
   const { error } = await prisma.product.create({
     data: {
-      name: "Nike Air Force 55",
-      brand: "Nike",
-      color: "White",
-      size: [5, 7, 8],
-      price: 2200,
-      description: "Classic everyday sneaker with premium leather design.",
-      image: "/nike-airforce1.jpg",
-      category: "Lifestyle",
+      name: name,
+      brand: brand,
+      color: color,
+      size: [size, size, size, size],
+      price: price,
+      description: description,
+      image: image,
+      category: category,
       wishlist: false,
-      rate: 4.3,
+      rate: rate,
       sale: true,
-      discount: 80,
-      numRemaining: 12,
-      reviews: "Very comfortable and clean design.",
-      addToCart: false,
+      discount: discount,
+      numRemaining: numRemaining,
+      reviews: reviews,
     },
   });
   if (error) throw new Error("Could Not Create Product. 😕");
@@ -94,31 +103,51 @@ export const createProduct = async function () {
 // Create Many Products
 export const createProducts = async function () {
   const { error } = await prisma.product.createMany({
-    data: sneakers,
+    data: [],
   });
-  if (error) throw Error("Could Not Create Products. 😕");
+  if (error) {
+    throw Error("Could Not Create Products. 😕");
+  }
 };
 
 // Update One Product
-export const updateProduct = async function (productID) {
+export const updateProduct = async function (formData, productID) {
+  const getFormDataValue = function (input) {
+    const value = formData.get(input);
+    return value;
+  };
+  const name = getFormDataValue("name");
+  const brand = getFormDataValue("brand");
+  const color = getFormDataValue("color");
+  const size = getFormDataValue("size");
+  const price = getFormDataValue("price");
+  const description = getFormDataValue("description");
+  const image = getFormDataValue("image");
+  const category = getFormDataValue("category");
+  const wishlist = getFormDataValue("wishlist");
+  const rate = getFormDataValue("rate");
+  const sale = getFormDataValue("sale");
+  const discount = getFormDataValue("discount");
+  const numRemaining = getFormDataValue("numRemaining");
+  const reviews = getFormDataValue("reviews");
+
   const { error } = await prisma.product.update({
     where: { id: productID },
     data: {
-      name: "hrbfwhfbwf",
-      brand: "fbwuhfuhf",
-      color: "Grey",
-      size: [4, 5, 7, 8],
-      price: 2600,
-      description: "Retro-inspired sneaker with versatile styling.",
-      image: "/nb550.jpg",
-      category: "Lifestyle",
+      name: name,
+      brand: brand,
+      color: color,
+      size: [size, size, size, size],
+      price: price,
+      description: description,
+      image: image,
+      category: category,
       wishlist: false,
-      rate: 4.6,
+      rate: rate,
       sale: true,
-      discount: 20,
-      numRemaining: 7,
-      reviews: "Looks great with almost anything.",
-      addToCart: false,
+      discount: discount,
+      numRemaining: numRemaining,
+      reviews: reviews,
     },
   });
   if (error) throw new Error("Could Not Update Product. 😕");
@@ -144,14 +173,13 @@ export const deleteProducts = async function () {
 };
 
 // Create a Cart
-export const createCart = async function (formData) {
-  const userID = formData.get("userID");
-  await prisma.cart.create({ data: { userID: Number(userID) } });
+export const createCart = async function () {
+  await prisma.cart.create({ data: { userID: Number(session.user.id) } });
 };
 
 //Create Cart Items or Add items to cart
-export const createCartItems = async function (productID, userID) {
-  const cart = await getCart(userID);
+export const createCartItems = async function (productID) {
+  const cart = await getCart(session.user.id);
   if (!cart) {
     throw new Error("No Cart Found. 😕");
   }
@@ -171,10 +199,9 @@ export const createCartItems = async function (productID, userID) {
 
 //Delete Cart Items
 export const deleteCartItems = async function (formData) {
-  const userID = formData.get("userID");
   const productID = formData.get("productID");
 
-  const cart = await getCart(userID);
+  const cart = await getCart(session.user.id);
   if (!cart) {
     throw new Error("Cart not found. 😕");
   }
@@ -219,16 +246,16 @@ export const addToCart = async function (formData) {
   const userID = Number(getFormDataValue("userID"));
   const productID = Number(getFormDataValue("productID"));
 
-  const { role } = await getUser(userID);
+  const { role } = await getUser(session.user.id);
   if (role === "ADMIN") return;
 
-  const userHasCart = await getCart(userID);
+  const userHasCart = await getCart(session.user.id);
 
   if (!userHasCart) {
-    await prisma?.cart?.create({ data: { userID } });
+    await prisma?.cart?.create({ data: { userID: session.user.id } });
   }
 
-  await createCartItems(productID, userID);
+  await createCartItems(productID, session.user.id);
 };
 
 //Create Address
@@ -241,7 +268,6 @@ export const createAddress = async function (formData) {
     return value.trim();
   };
 
-  const userID = Number(getFormDataValue("userID"));
   const country = getFormDataValue("country");
   const city = getFormDataValue("city");
   const street = getFormDataValue("street");
@@ -256,7 +282,7 @@ export const createAddress = async function (formData) {
     postalCode,
     city,
     street,
-    userID,
+    session.user.id,
   );
 
   if (addressExist) {
@@ -264,15 +290,15 @@ export const createAddress = async function (formData) {
   }
 
   const createdAddress = await prisma.address.create({
-    data: { country, postalCode, city, street, userID },
+    data: { country, postalCode, city, street, userID: session.user.id },
   });
   return createdAddress;
 };
 
 //create orderItems
-export const createOrderItems = async function (userID, cartID, productID) {
-  const { id: orderID } = await getOrder(userID);
-  const cartItemsAll = await getAllCartitems(userID);
+export const createOrderItems = async function (cartID, productID) {
+  const { id: orderID } = await getOrder(session.user.id);
+  const cartItemsAll = await getAllCartitems(session.user.id);
   return cartItemsAll.map(async (a) => {
     await prisma.orderItems.create({
       data: {
@@ -302,38 +328,36 @@ export const checkout = async function (formData) {
     return value;
   };
   const productID = getFormDataValue("productID");
-  const userID = Number(getFormDataValue("userID"));
 
-  const { id: cartID } = await getCart(Number(userID));
+  const { id: cartID } = await getCart(Number(session.user.id));
 
-  if (!Number.isInteger(userID)) {
+  if (!Number.isInteger(session.user.id)) {
     throw new Error("userID must be a number.");
   }
 
-  const firstAddressCreated = await getFirstCreatedAddress(userID);
+  const firstAddressCreated = await getFirstCreatedAddress(session.user.id);
   if (!firstAddressCreated) {
     throw new Error(
       "Could not find your address. Try selecting manually or creating an address. 😕",
     );
   }
 
-  const totalProductPrice = await getTotalProductPrice(userID);
-  const order = await getOrder(userID);
+  const totalProductPrice = await getTotalProductPrice(session.user.id);
+  const order = await getOrder(session.user.id);
 
   if (order) {
     const { id: orderID, userID: orderUserID } = await prisma.order.update({
       where: { id: order.id },
       data: { totalPrice: totalProductPrice },
     });
-    const cartItemsAll = await getAllCartitems(userID);
-    const session = await createCheckoutSession(
+    const cartItemsAll = await getAllCartitems(session.user.id);
+    const checkoutSession = await createCheckoutSession(
       orderID,
       orderUserID,
       cartItemsAll,
     );
-    console.log(session);
-    await createOrderItems(userID, cartID, productID);
-    redirect(session?.url);
+    await createOrderItems(session.user.id, cartID, productID);
+    redirect(checkoutSession?.url);
   }
   if (!order) {
     const { id: orderID, userID: orderUserID } = await prisma.order.create({
@@ -343,15 +367,14 @@ export const checkout = async function (formData) {
         totalPrice: totalProductPrice,
       },
     });
-    const cartItemsAll = await getAllCartitems(userID);
-    const session = await createCheckoutSession(
+    const cartItemsAll = await getAllCartitems(session.user.id);
+    const checkoutSession = await createCheckoutSession(
       orderID,
       orderUserID,
       cartItemsAll,
     );
-    console.log(session);
-    await createOrderItems(userID, cartID, productID);
-    redirect(session?.url);
+    await createOrderItems(session.user.id, cartID, productID);
+    redirect(checkoutSession?.url);
   }
 };
 
@@ -365,9 +388,8 @@ export const selectAddress = async function (formData) {
   };
 
   const preferedAddress = getFormDataValue("preferedAddress");
-  const userID = Number(getFormDataValue("userID"));
 
-  if (!Number.isInteger(userID)) {
+  if (!Number.isInteger(session.user.id)) {
     throw new Error("userID must be a number.");
   }
 
@@ -377,12 +399,12 @@ export const selectAddress = async function (formData) {
 
   const selectedAddress = await getUserAddress(preferedAddress);
 
-  if (!selectedAddress || selectedAddress.userID !== userID) {
+  if (!selectedAddress || selectedAddress.userID !== session.user.id) {
     throw new Error("Selected address not found. 😕");
   }
 
   await prisma.order.upsert({
-    where: { userID },
+    where: { userID: session.user.id },
     update: {
       addressID: selectedAddress.id,
     },
