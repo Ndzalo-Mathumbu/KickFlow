@@ -16,6 +16,8 @@ import {
 import { createCheckoutSession } from "./stripe";
 import { authOptions } from "../_lib/auth";
 import { getServerSession } from "next-auth";
+import z from "zod";
+import bcrypt from "bcryptjs";
 
 const session = await getServerSession(authOptions);
 console.log(session, "test session...");
@@ -35,6 +37,53 @@ export const updateUsers = async function () {
   });
   if (error) {
     throw new Error("Could Not Update Users. 😕");
+  }
+};
+
+// CreateUser
+export const createUser = async function (formData) {
+  const getFormDataValue = function (input) {
+    const value = formData.get(input);
+    return value;
+  };
+
+  const dataFromForm = {
+    fullName: getFormDataValue("fullName"),
+    email: getFormDataValue("email"),
+    password: getFormDataValue("password"),
+  };
+
+  const createUserSchemaZOD = z.object({
+    fullName: z
+      .string()
+      .min(2, "FullName is must be at least two(2) characters."),
+    email: z.string().email("Email is required"),
+    password: z
+      .string()
+      .min(8, "Password must have at least 8 characters.")
+      .regex(/[A-Z]/, "Password must include an uppercase letter")
+      .regex(/[a-z]/, "Password must include a lowercase letter")
+      .regex(/[0-9]/, "Password must include a number")
+      .regex(/[^A-Za-z0-9]/, "Password must include a special character"),
+  });
+  const validationResult = createUserSchemaZOD.safeParse(dataFromForm);
+  const hashedPassword = await bcrypt.hash(dataFromForm.password, 10);
+  console.log(validationResult);
+  if (!validationResult.success) {
+    return new Response(JSON.stringify(validationResult.error.message), {
+      status: 400,
+    });
+  }
+
+  const { error } = await prisma.user.create({
+    data: {
+      name: dataFromForm.fullName,
+      email: dataFromForm.email,
+      password: hashedPassword,
+    },
+  });
+  if (error) {
+    throw new Error("Could Not Create User. 😕");
   }
 };
 

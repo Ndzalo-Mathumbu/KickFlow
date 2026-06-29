@@ -18,6 +18,7 @@ model User {
   cart      Cart?
   order     Order[]
   welcomeMessage String? 
+  password String?
 }
 
 model Product {
