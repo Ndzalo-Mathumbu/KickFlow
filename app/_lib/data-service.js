@@ -15,6 +15,9 @@ export const getProduct = async function (productID) {
   const product = await prisma.product.findUnique({
     where: { id: Number(productID) },
   });
+  if (!product) {
+    throw new Error(`Product ${productID} does not exist 😕.`);
+  }
   return product;
 };
 
