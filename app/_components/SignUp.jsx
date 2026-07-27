@@ -1,16 +1,29 @@
+"use client";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 import googleImage from "../../public/googleImage.png";
 import { createUser } from "../_lib/actions";
 import { LockKeyhole, Mail, UserRound } from "lucide-react";
+import { signIn } from "next-auth/react";
+import { ErrorAlert, SuccessAlert } from "./Notifications";
 
 const SignUpForm = function () {
+  const handleSubmit = async function (e) {
+    e.preventDefault();
+    const result = await createUser(new FormData(e.currentTarget));
+    if (!result.success) {
+      ErrorAlert(result.message);
+      return;
+    }
+    SuccessAlert(result.message);
+  };
+
   return (
     <div className="w-80 rounded-xl bg-gray-900 p-8 text-gray-100 mx-auto my-auto">
       <p className="text-center text-2xl font-bold">Create Account</p>
 
-      <form className="mt-6" action={createUser}>
+      <form className="mt-6" onSubmit={handleSubmit}>
         <div className="flex cols-3 gap-3">
           <div className="mt-1 text-sm">
             <label htmlFor="fullName" className="block text-gray-400 mb-1">
@@ -90,7 +103,8 @@ const SignUpForm = function () {
       <div className="flex justify-center mt-4 gap-2">
         <button aria-label="Log in with Google" className="rounded-sm p-3 flex">
           <Image
-            className="rounded-full"
+            onClick={() => signIn("google")}
+            className="rounded-full cursor-pointer"
             quality={100}
             alt="google icon"
             src={googleImage}

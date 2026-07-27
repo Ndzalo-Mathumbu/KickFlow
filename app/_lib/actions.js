@@ -16,21 +16,22 @@ import {
 import { createCheckoutSession } from "./stripe";
 import { authOptions } from "../_lib/auth";
 import { getServerSession } from "next-auth";
-import z from "zod";
+import z, { success } from "zod";
 import bcrypt from "bcryptjs";
+import { WelcomeEmail } from "./email";
 
 const getCurrentUser = async function () {
   const session = await getServerSession(authOptions);
   const userID = Number(session?.user?.id);
 
   if (!Number.isInteger(userID)) {
-    throw new Error("You must be signed in to perform this action.");
+    throw new Error("You must be signed in to perform this action 😕.");
   }
 
   const user = await getUser(userID);
   if (!user) {
     throw new Error(
-      "Your account no longer exists. Please sign out and sign in again.",
+      "Your account no longer exists. Please sign out and sign in again 😕.",
     );
   }
 
@@ -83,11 +84,21 @@ export const createUser = async function (formData) {
   });
   const validationResult = createUserSchemaZOD.safeParse(dataFromForm);
   const hashedPassword = await bcrypt.hash(dataFromForm.password, 10);
-  console.log(validationResult);
   if (!validationResult.success) {
     return new Response(JSON.stringify(validationResult.error.message), {
       status: 400,
     });
+  }
+
+  const emailExist = await prisma.user.findUnique({
+    where: { email: dataFromForm.email },
+  });
+
+  if (emailExist) {
+    return {
+      success: false,
+      message: `Email ${dataFromForm.email} already exist. Try signing in 😕.`,
+    };
   }
 
   const { error } = await prisma.user.create({
@@ -97,9 +108,22 @@ export const createUser = async function (formData) {
       password: hashedPassword,
     },
   });
+
   if (error) {
     throw new Error("Could Not Create User. 😕");
   }
+
+  /* if (!emailExist) {
+    return {
+      success: true,
+      message: "Welcome to KickFlow 🎉. Thanks for signing up 😀!",
+    };
+  } */
+  await WelcomeEmail(dataFromForm.email, dataFromForm.fullName);
+  return {
+    success: true,
+    message: "Welcome to KickFlow 🎉. Thanks for signing up 😀!",
+  };
 };
 
 // CreateUsers
