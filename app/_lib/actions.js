@@ -18,7 +18,7 @@ import { authOptions } from "../_lib/auth";
 import { getServerSession } from "next-auth";
 import z, { success } from "zod";
 import bcrypt from "bcryptjs";
-import { WelcomeEmail } from "./email";
+import { VerifyEmail, WelcomeEmail } from "./email";
 
 const getCurrentUser = async function () {
   const session = await getServerSession(authOptions);
@@ -58,6 +58,15 @@ export const updateUsers = async function () {
   }
 };
 
+const generateToken = async function (email) {
+  const verificationToken = crypto.randomUUID();
+  await prisma.user.update({
+    where: { email },
+    data: { verificationToken },
+  });
+  return verificationToken;
+};
+
 // CreateUser
 export const createUser = async function (formData) {
   const getFormDataValue = function (input) {
@@ -72,22 +81,25 @@ export const createUser = async function (formData) {
   };
 
   const createUserSchemaZOD = z.object({
-    fullName: z.string().min(2, "FullName must be at least two(2) characters."),
-    email: z.string().email("Email is required"),
+    fullName: z
+      .string()
+      .min(2, "FullName must be at least two(2) characters 😕."),
+    email: z.string().email("Email is required 😕."),
     password: z
       .string()
-      .min(8, "Password must have at least 8 characters.")
-      .regex(/[A-Z]/, "Password must include an uppercase letter")
-      .regex(/[a-z]/, "Password must include a lowercase letter")
-      .regex(/[0-9]/, "Password must include a number")
-      .regex(/[^A-Za-z0-9]/, "Password must include a special character"),
+      .min(8, "Password must have at least 8 characters 😕.")
+      .regex(/[A-Z]/, "Password must include an uppercase letter 😕.")
+      .regex(/[a-z]/, "Password must include a lowercase letter 😕.")
+      .regex(/[0-9]/, "Password must include a number 😕.")
+      .regex(/[^A-Za-z0-9]/, "Password must include a special character 😕."),
   });
   const validationResult = createUserSchemaZOD.safeParse(dataFromForm);
   const hashedPassword = await bcrypt.hash(dataFromForm.password, 10);
   if (!validationResult.success) {
-    return new Response(JSON.stringify(validationResult.error.message), {
-      status: 400,
-    });
+    return {
+      success: false,
+      message: validationResult.error.issues[0].message,
+    };
   }
 
   const emailExist = await prisma.user.findUnique({
@@ -113,12 +125,8 @@ export const createUser = async function (formData) {
     throw new Error("Could Not Create User. 😕");
   }
 
-  /* if (!emailExist) {
-    return {
-      success: true,
-      message: "Welcome to KickFlow 🎉. Thanks for signing up 😀!",
-    };
-  } */
+  const token = await generateToken(dataFromForm.email);
+  await VerifyEmail(dataFromForm.email, dataFromForm.fullName, token);
   await WelcomeEmail(dataFromForm.email, dataFromForm.fullName);
   return {
     success: true,

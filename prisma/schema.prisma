@@ -19,6 +19,9 @@ model User {
   order     Order[]
   welcomeMessage String? 
   password String?
+  emailVerified EmailVerified @default(FALSE)
+  verificationToken String?
+  verificationTokenExpires verificationTokenExpires @default(FALSE)
 }
 
 model Product {
@@ -118,4 +121,14 @@ enum OrderStatus {
 enum Role {
   USER
   ADMIN
+}
+
+enum EmailVerified {
+TRUE
+FALSE
+}
+
+enum verificationTokenExpires {
+TRUE
+FALSE
 }
