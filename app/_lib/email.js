@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Resend } from "resend";
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -17,7 +18,7 @@ export async function VerifyEmail(userEmail, userName, token) {
   await resend.emails.send({
     from: "KickFlow <onboarding@resend.dev>",
     to: userEmail,
-    subject: "Verify your KickFlow account.",
+    subject: "Verify your KickFlow account",
     html: `
       <h1>Welcome ${userName}</h1>
       <p>Thanks for joining KickFlow. Click the following button to verify your email.</p>

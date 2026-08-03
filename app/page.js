@@ -21,9 +21,9 @@ import {
 const Home = async function () {
   return (
     <form action={checkout}>
-      <input type="hidden" name="productID" value="55" />
-      <input type="radio" name="preferedAddress" value="59" />
-      <input type="radio" name="preferedAddress" value="60" />
+      <input type="hidden" name="productID" value="14" />
+      <input type="radio" name="preferedAddress" value="61" />
+      <input type="radio" name="preferedAddress" value="62" />
 
       <label htmlFor="country">Country</label>
       <input
