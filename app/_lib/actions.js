@@ -19,6 +19,7 @@ import { getServerSession } from "next-auth";
 import z, { success } from "zod";
 import bcrypt from "bcryptjs";
 import { VerifyEmail, WelcomeEmail } from "./email";
+import { addMinutes } from "date-fns";
 
 const getCurrentUser = async function () {
   const session = await getServerSession(authOptions);
@@ -126,12 +127,17 @@ export const createUser = async function (formData) {
   }
 
   const token = await generateToken(dataFromForm.email);
+  const expirationTime = addMinutes(new Date(), 15);
+  await prisma.user.update({
+    where: { email: dataFromForm.email },
+    data: { verificationTokenExpires: expirationTime.toISOString() },
+  });
   await VerifyEmail(dataFromForm.email, dataFromForm.fullName, token);
-  await WelcomeEmail(dataFromForm.email, dataFromForm.fullName);
-  return {
+  /* await WelcomeEmail(dataFromForm.email, dataFromForm.fullName); */
+  /* return {
     success: true,
     message: "Welcome to KickFlow 🎉. Thanks for signing up 😀!",
-  };
+  }; */
 };
 
 // CreateUsers

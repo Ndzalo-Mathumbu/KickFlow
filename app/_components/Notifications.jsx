@@ -1,6 +1,5 @@
 "use client";
 import { toast } from "sonner";
-import { createUser } from "../_lib/actions";
 
 const ErrorStyle = {
   background: "#111827",
