@@ -43,7 +43,7 @@ const VerifyEmail = async function ({ token }) {
     });
   }
 
-  redirect("/sign-in?verified=1");
+  redirect("/sign-in");
 };
 
 export default VerifyEmail;

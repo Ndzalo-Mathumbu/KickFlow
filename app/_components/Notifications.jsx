@@ -15,12 +15,27 @@ const SuccessStyle = {
   borderRadius: "12px",
 };
 
+const ErrorDuration = {
+  duration: 6300,
+};
+const SuccessDuration = {
+  duration: 5000,
+};
+
 const ErrorAlert = function (errorMessage) {
-  toast.error(errorMessage, { style: ErrorStyle });
+  toast.error(
+    errorMessage,
+    { style: ErrorStyle },
+    { duration: ErrorDuration.duration },
+  );
 };
 
 const SuccessAlert = function (successMessage) {
-  toast.success(successMessage, { style: SuccessStyle });
+  toast.success(
+    successMessage,
+    { style: SuccessStyle },
+    { duration: SuccessDuration.duration },
+  );
 };
 
 export { ErrorAlert, SuccessAlert };

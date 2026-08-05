@@ -8,16 +8,19 @@ import { LockKeyhole, Mail, UserRound } from "lucide-react";
 import { signIn } from "next-auth/react";
 import { ErrorAlert, SuccessAlert } from "./Notifications";
 import { useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 const SignInForm = function () {
+  const router = useRouter();
   const searchParams = useSearchParams();
-  const verified = searchParams.get("verified");
-
+  const verified = searchParams?.get("verified");
   useEffect(() => {
-    if (verified === "1") {
-      SuccessAlert("Email successfully verified. Log in to continue.");
+    console.log("Effect ran");
+    if (verified === "true") {
+      SuccessAlert("Email successfully verified. Log in to continue..");
     }
-  }, [verified]);
+    router.replace("/sign-in?verified=true");
+  }, [verified, router]);
 
   return (
     <div className="w-80 rounded-xl bg-gray-900 p-8 text-gray-100 mx-auto my-auto">
@@ -25,25 +28,8 @@ const SignInForm = function () {
 
       <form className="mt-6">
         <div className="flex cols-3 gap-3">
-          <div className="mt-1 text-sm">
-            <label htmlFor="fullName" className="block text-gray-400 mb-1">
-              FullName
-            </label>
-
-            <div className="relative">
-              <UserRound className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 w-4 h-4" />
-              <input
-                type="text"
-                id="fullName"
-                name="fullName"
-                className="w-full rounded-md border border-gray-700 bg-gray-900 px-10 py-3 text-gray-100 outline-none focus:border-purple-400"
-                placeholder="Name"
-              />
-            </div>
-          </div>
-
-          <div className="mt-1 text-sm">
-            <label htmlFor="email" className="block text-gray-400 mb-1">
+          <div className="mt-1 text-sm w-100">
+            <label htmlFor="email" className="block  text-gray-400 mb-1">
               Email
             </label>
 
