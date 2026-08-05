@@ -117,7 +117,7 @@ const SignUpForm = function () {
       <p className="text-center text-xs text-gray-400 mt-4">
         Already have an account?{" "}
         <Link
-          href="#"
+          href="/sign-in"
           className="text-gray-100 hover:underline hover:decoration-purple-400"
         >
           Sign in

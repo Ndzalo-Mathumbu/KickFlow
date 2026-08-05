@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect } from "react";
 import googleImage from "../../public/googleImage.png";
-import { createUser } from "../_lib/actions";
+import { createUser, signInUser } from "../_lib/actions";
 import { LockKeyhole, Mail, UserRound } from "lucide-react";
 import { signIn } from "next-auth/react";
 import { ErrorAlert, SuccessAlert } from "./Notifications";
@@ -22,11 +22,21 @@ const SignInForm = function () {
     router.replace("/sign-in?verified=true");
   }, [verified, router]);
 
+  const handleSubmit = async function (e) {
+    e.preventDefault();
+    const result = await signInUser(new FormData(e.currentTarget));
+    if (!result?.success) {
+      ErrorAlert(result?.message);
+      return;
+    }
+    SuccessAlert(result?.message);
+  };
+
   return (
     <div className="w-80 rounded-xl bg-gray-900 p-8 text-gray-100 mx-auto my-auto">
       <p className="text-center text-2xl font-bold">SignIn</p>
 
-      <form className="mt-6">
+      <form className="mt-6" onSubmit={handleSubmit}>
         <div className="flex cols-3 gap-3">
           <div className="mt-1 text-sm w-100">
             <label htmlFor="email" className="block  text-gray-400 mb-1">
@@ -74,7 +84,7 @@ const SignInForm = function () {
         </div>
 
         <button className="w-full rounded-md bg-purple-400 py-3 font-semibold text-gray-900 hover:bg-purple-300 transition">
-          Sign up
+          Sign in
         </button>
       </form>
 
@@ -101,12 +111,12 @@ const SignInForm = function () {
       </div>
 
       <p className="text-center text-xs text-gray-400 mt-4">
-        Already have an account?{" "}
+        Don&apos;t have an account?{" "}
         <Link
-          href="#"
+          href="/sign-up"
           className="text-gray-100 hover:underline hover:decoration-purple-400"
         >
-          Sign in
+          Sign up
         </Link>
       </p>
     </div>

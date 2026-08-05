@@ -132,12 +132,84 @@ export const createUser = async function (formData) {
     where: { email: dataFromForm.email },
     data: { verificationTokenExpires: expirationTime.toISOString() },
   });
+  await WelcomeEmail(dataFromForm.email, dataFromForm.fullName);
   await VerifyEmail(dataFromForm.email, dataFromForm.fullName, token);
-  /* await WelcomeEmail(dataFromForm.email, dataFromForm.fullName); */
-  /* return {
+  return {
     success: true,
     message: "Welcome to KickFlow 🎉. Thanks for signing up 😀!",
-  }; */
+  };
+};
+
+//login/signin user after redirect from email verification
+export const signInUser = async function (formData) {
+  const getFormDataValue = function (input) {
+    const value = formData.get(input);
+    return value;
+  };
+
+  const dataFromForm = {
+    email: getFormDataValue("email"),
+    password: getFormDataValue("password"),
+  };
+
+  const createUserSchemaZOD = z.object({
+    email: z.string().email("Email is required 😕."),
+    password: z
+      .string()
+      .min(8, "Password must have at least 8 characters 😕.")
+      .regex(/[A-Z]/, "Password must include an uppercase letter 😕.")
+      .regex(/[a-z]/, "Password must include a lowercase letter 😕.")
+      .regex(/[0-9]/, "Password must include a number 😕.")
+      .regex(/[^A-Za-z0-9]/, "Password must include a special character 😕."),
+  });
+  const validationResult = createUserSchemaZOD.safeParse(dataFromForm);
+  if (!validationResult.success) {
+    return {
+      success: false,
+      message: validationResult.error.issues[0].message,
+    };
+  }
+
+  const checkUser = await prisma.user.findUnique({
+    where: { email: dataFromForm.email },
+    select: {
+      password: true,
+      emailVerified: true,
+    },
+  });
+
+  if (!checkUser) {
+    return {
+      success: false,
+      message: `Email not found, try signing up 😕.`,
+    };
+  }
+  if (checkUser) {
+    const passwordCheck = await bcrypt.compare(
+      dataFromForm.password,
+      checkUser.password,
+    );
+    if (!passwordCheck) {
+      return {
+        success: false,
+        message: "Invalid password 😕.",
+      };
+    }
+    if (passwordCheck) {
+      const userEmailVerified = !!checkUser.emailVerified;
+
+      if (!userEmailVerified) {
+        return {
+          success: false,
+          message: `Email not verified 😕.`,
+        };
+      }
+
+      if (userEmailVerified) {
+        console.log("Email verified");
+      }
+    }
+  }
 };
 
 // CreateUsers
