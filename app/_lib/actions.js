@@ -16,7 +16,7 @@ import {
 import { createCheckoutSession } from "./stripe";
 import { authOptions } from "../_lib/auth";
 import { getServerSession } from "next-auth";
-import z, { success } from "zod";
+import z from "zod";
 import bcrypt from "bcryptjs";
 import { VerifyEmail, WelcomeEmail } from "./email";
 import { addMinutes } from "date-fns";
@@ -24,6 +24,7 @@ import { addMinutes } from "date-fns";
 const getCurrentUser = async function () {
   const session = await getServerSession(authOptions);
   const userID = Number(session?.user?.id);
+  console.log(session, `this is a user session...`);
 
   if (!Number.isInteger(userID)) {
     throw new Error("You must be signed in to perform this action 😕.");
@@ -140,8 +141,8 @@ export const createUser = async function (formData) {
   };
 };
 
-//login/signin user after redirect from email verification
-export const signInUser = async function (formData) {
+//validate user info before signing in
+export const signInFormValidation = async function (formData) {
   const getFormDataValue = function (input) {
     const value = formData.get(input);
     return value;
@@ -169,46 +170,10 @@ export const signInUser = async function (formData) {
       message: validationResult.error.issues[0].message,
     };
   }
-
-  const checkUser = await prisma.user.findUnique({
-    where: { email: dataFromForm.email },
-    select: {
-      password: true,
-      emailVerified: true,
-    },
-  });
-
-  if (!checkUser) {
+  if (validationResult.success) {
     return {
-      success: false,
-      message: `Email not found, try signing up 😕.`,
+      success: true,
     };
-  }
-  if (checkUser) {
-    const passwordCheck = await bcrypt.compare(
-      dataFromForm.password,
-      checkUser.password,
-    );
-    if (!passwordCheck) {
-      return {
-        success: false,
-        message: "Invalid password 😕.",
-      };
-    }
-    if (passwordCheck) {
-      const userEmailVerified = !!checkUser.emailVerified;
-
-      if (!userEmailVerified) {
-        return {
-          success: false,
-          message: `Email not verified 😕.`,
-        };
-      }
-
-      if (userEmailVerified) {
-        console.log("Email verified");
-      }
-    }
   }
 };
 

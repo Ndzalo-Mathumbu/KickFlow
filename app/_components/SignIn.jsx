@@ -3,11 +3,11 @@ import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect } from "react";
 import googleImage from "../../public/googleImage.png";
-import { createUser, signInUser } from "../_lib/actions";
+import { signInFormValidation } from "../_lib/actions";
 import { LockKeyhole, Mail, UserRound } from "lucide-react";
 import { signIn } from "next-auth/react";
 import { ErrorAlert, SuccessAlert } from "./Notifications";
-import { useSearchParams } from "next/navigation";
+import { redirect, useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 
 const SignInForm = function () {
@@ -24,12 +24,25 @@ const SignInForm = function () {
 
   const handleSubmit = async function (e) {
     e.preventDefault();
-    const result = await signInUser(new FormData(e.currentTarget));
+    const formData = new FormData(e.currentTarget);
+    const result = await signInFormValidation(formData);
     if (!result?.success) {
       ErrorAlert(result?.message);
       return;
     }
-    SuccessAlert(result?.message);
+
+    const signInResult = await signIn("credentials", {
+      email: formData.get("email"),
+      password: formData.get("password"),
+      redirect: false,
+    });
+    if (!signInResult.ok) {
+      ErrorAlert(`${signInResult.error} 😕.`);
+    }
+    if (signInResult.ok) {
+      SuccessAlert(`Successfully logged in 🎊.`);
+      redirect(`${process.env.NEXT_PUBLIC_URL}`);
+    }
   };
 
   return (

@@ -20,8 +20,8 @@ import {
 
 const Home = async function () {
   return (
-    <form action={checkout}>
-      <input type="hidden" name="productID" value="14" />
+    <form action={addToCart}>
+      <input type="hidden" name="productID" value="18" />
       <input type="radio" name="preferedAddress" value="61" />
       <input type="radio" name="preferedAddress" value="62" />
 
