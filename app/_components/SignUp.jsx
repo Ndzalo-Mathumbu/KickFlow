@@ -76,18 +76,9 @@ const SignUpForm = function () {
               placeholder="Enter password"
             />
           </div>
-
-          <div className="flex justify-end text-xs text-gray-400 my-2">
-            <Link
-              href="#"
-              className="text-gray-100 hover:underline hover:decoration-purple-400"
-            >
-              Forgot Password?
-            </Link>
-          </div>
         </div>
 
-        <button className="w-full rounded-md bg-purple-400 py-3 font-semibold text-gray-900 hover:bg-purple-300 transition">
+        <button className="w-full rounded-md bg-purple-400 py-3 font-semibold text-gray-900 hover:bg-purple-300 transition  mt-6">
           Sign up
         </button>
       </form>

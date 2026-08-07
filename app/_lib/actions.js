@@ -16,7 +16,7 @@ import {
 import { createCheckoutSession } from "./stripe";
 import { authOptions } from "../_lib/auth";
 import { getServerSession } from "next-auth";
-import z from "zod";
+import z, { success } from "zod";
 import bcrypt from "bcryptjs";
 import { VerifyEmail, WelcomeEmail } from "./email";
 import { addMinutes } from "date-fns";
@@ -173,6 +173,43 @@ export const signInFormValidation = async function (formData) {
   if (validationResult.success) {
     return {
       success: true,
+    };
+  }
+};
+
+export const newPasswordFormValidation = async function (formData) {
+  const getFormDataValue = function (input) {
+    const value = formData.get(input);
+    return value;
+  };
+
+  const dataFromForm = {
+    email: getFormDataValue("email"),
+  };
+
+  const createUserSchemaZOD = z.object({
+    email: z.string().email("Email is required 😕."),
+  });
+  const validationResult = createUserSchemaZOD.safeParse(dataFromForm);
+  if (!validationResult.success) {
+    return {
+      success: false,
+      message: validationResult.error.issues[0].message,
+    };
+  }
+  if (validationResult.success) {
+    return {
+      success: true,
+    };
+  }
+
+  const userExist = await prisma.user.findUnique({
+    where: { email: dataFromForm.email },
+  });
+  if (!userExist) {
+    return {
+      success: false,
+      message: ``,
     };
   }
 };

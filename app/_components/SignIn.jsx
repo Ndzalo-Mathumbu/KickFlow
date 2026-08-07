@@ -88,7 +88,7 @@ const SignInForm = function () {
 
           <div className="flex justify-end text-xs text-gray-400 my-2">
             <Link
-              href="#"
+              href="/forgot-password"
               className="text-gray-100 hover:underline hover:decoration-purple-400"
             >
               Forgot Password?
