@@ -61,12 +61,17 @@ export const updateUsers = async function () {
   }
 };
 
-const generateToken = async function (email) {
+const generateVerificationToken = async function (email) {
   const verificationToken = crypto.randomUUID();
   await prisma.user.update({
     where: { email },
     data: { verificationToken },
   });
+  return verificationToken;
+};
+
+const generateForgotPasswordVerificationToken = function () {
+  const verificationToken = crypto.randomUUID();
   return verificationToken;
 };
 
@@ -128,7 +133,7 @@ export const createUser = async function (formData) {
     throw new Error("Could Not Create User. 😕");
   }
 
-  const token = await generateToken(dataFromForm.email);
+  const token = await generateVerificationToken(dataFromForm.email);
   const expirationTime = addMinutes(new Date(), 10);
   await prisma.user.update({
     where: { email: dataFromForm.email },
@@ -202,7 +207,7 @@ export const forgotPasswordFormValidation = async function (formData) {
 
   const userExist = await prisma.user.findUnique({
     where: { email: dataFromForm.email },
-    select: { name: true, email: true },
+    select: { id: true, name: true, email: true },
   });
   if (!userExist) {
     return {
@@ -212,28 +217,36 @@ export const forgotPasswordFormValidation = async function (formData) {
   }
 
   if (userExist) {
-    const token = await generateToken(dataFromForm.email);
-    const expirationTime = addMinutes(new Date(), 10);
+    const token = generateForgotPasswordVerificationToken(dataFromForm.email);
+    const forgotPasswordExpirationTime = addMinutes(new Date(), 10);
 
     await prisma.user.update({
       where: { email: dataFromForm.email },
       data: {
-        forgotPasswordTokenExpires: expirationTime.toISOString(),
+        forgotPasswordTokenExpires: forgotPasswordExpirationTime.toISOString(),
         forgotPasswordToken: token,
       },
     });
-    await ResetPasswordEmail(dataFromForm.email, userExist.name, token);
+    await ResetPasswordEmail(
+      dataFromForm.email,
+      userExist.name,
+      token,
+      userExist.id,
+    );
   }
+
   if (validationResult.success) {
     return {
       success: true,
     };
   }
-  return { userEmail: userExist.email };
 };
 
-export const resetPasswordFormValidation = async function (formData) {
-  const { userEmail } = await forgotPasswordFormValidation();
+export const resetPasswordFormValidation = async function (
+  formData,
+  token,
+  id,
+) {
   const getFormDataValue = function (input) {
     const value = formData.get(input);
     return value;
@@ -260,12 +273,13 @@ export const resetPasswordFormValidation = async function (formData) {
     };
   }
 
-  const resetPassword = await prisma.user.update({
-    where: { email: userEmail },
-    data: { password: dataFromForm.password },
+  const hasdedPassword = await bcrypt.hash(dataFromForm.password, 10);
+  const resetPassword = await prisma.user?.update({
+    where: { id: +id, forgotPasswordToken: token },
+    data: { password: hasdedPassword },
   });
 
-  if (resetPassword.password === dataFromForm.password) {
+  if (resetPassword.password === hasdedPassword) {
     return {
       success: true,
       message: `Password successfully reset.`,

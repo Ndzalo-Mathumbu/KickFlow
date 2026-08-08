@@ -20,9 +20,9 @@ model User {
   welcomeMessage String? 
   password String?
   emailVerified EmailVerified @default(FALSE)
-  verificationToken String?
+  verificationToken String?  @unique
   verificationTokenExpires String?
-  forgotPasswordToken String?
+  forgotPasswordToken String?  @unique
   forgotPasswordTokenExpires String?
 }
 

@@ -40,7 +40,7 @@ export async function VerifyEmail(userEmail, userName, token) {
   });
 }
 
-export async function ResetPasswordEmail(userEmail, userName, token) {
+export async function ResetPasswordEmail(userEmail, userName, token, userID) {
   await resend.emails.send({
     from: "KickFlow <onboarding@resend.dev>",
     to: userEmail,
@@ -49,7 +49,7 @@ export async function ResetPasswordEmail(userEmail, userName, token) {
       <h1>Welcome ${userName}</h1>
       <p>Here is your password resetting link click the following button to continue.</p>
      <a
-  href="${process.env.NEXT_PUBLIC_URL}/reset-password?token=${token}"
+  href="${process.env.NEXT_PUBLIC_URL}/reset-password?token=${token}&id=${userID}"
   style="
     display:inline-block;
     background:#7c3aed;

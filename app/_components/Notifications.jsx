@@ -16,26 +16,28 @@ const SuccessStyle = {
 };
 
 const ErrorDuration = {
-  duration: 7000,
+  duration: 6000,
+  closeButton: true,
 };
 const SuccessDuration = {
   duration: 5000,
+  closeButton: true,
 };
 
 const ErrorAlert = function (errorMessage) {
-  toast.error(
-    errorMessage,
-    { style: ErrorStyle },
-    { duration: ErrorDuration.duration },
-  );
+  toast.error(errorMessage, {
+    style: ErrorStyle,
+    duration: ErrorDuration.duration,
+    closeButton: ErrorDuration.closeButton,
+  });
 };
 
 const SuccessAlert = function (successMessage) {
-  toast.success(
-    successMessage,
-    { style: SuccessStyle },
-    { duration: SuccessDuration.duration },
-  );
+  toast.success(successMessage, {
+    style: SuccessStyle,
+    duration: SuccessDuration.duration,
+    closeButton: SuccessDuration.closeButton,
+  });
 };
 
 export { ErrorAlert, SuccessAlert };

@@ -12,12 +12,17 @@ const VerifyEmail = async function ({ token }) {
       id: true,
       emailVerified: true,
       verificationTokenExpires: true,
+      email: true,
     },
   });
 
   if (!user) {
+    await prisma.user.delete({ where: { email: user.email } });
     return (
-      <h1>This verification link is invalid or has already been used 😕.</h1>
+      <h1>
+        This verification link is invalid or has already been used sign up again
+        😕.
+      </h1>
     );
   }
 
@@ -30,7 +35,8 @@ const VerifyEmail = async function ({ token }) {
     Number.isNaN(expiresAt.valueOf()) ||
     expiresAt <= new Date()
   ) {
-    return <h1>This verification link has expired 😕.</h1>;
+    await prisma.user.delete({ where: { email: user.email } });
+    return <h1>This verification link has expired sign up again 😕.</h1>;
   }
 
   if (user.emailVerified !== "TRUE") {

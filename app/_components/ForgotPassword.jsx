@@ -44,7 +44,7 @@ const ForgotPassword = function () {
         </div>
         <p className="text-[13px] text-gray-500 mt-3  ">Resend X</p>
         <button className="w-full rounded-md bg-purple-400 py-3 font-semibold mt-3 text-gray-900 hover:bg-purple-300 transition">
-          Send reset link
+          Send link
         </button>
       </form>
     </div>

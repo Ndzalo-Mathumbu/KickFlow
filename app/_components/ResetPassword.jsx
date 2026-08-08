@@ -3,12 +3,17 @@
 import { LockKeyhole } from "lucide-react";
 import { resetPasswordFormValidation } from "../_lib/actions";
 import { ErrorAlert, SuccessAlert } from "./Notifications";
+import { useSearchParams } from "next/navigation";
+import Link from "next/link";
 
 const ResetPassword = function () {
+  const searchParams = useSearchParams();
+  const token = searchParams.get("token");
+  const id = searchParams.get("id");
   const handleSubmit = async function (e) {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    const result = await resetPasswordFormValidation(formData);
+    const result = await resetPasswordFormValidation(formData, token, id);
     if (!result.success) {
       ErrorAlert(result.message);
     }
@@ -45,6 +50,15 @@ const ResetPassword = function () {
           Reset password
         </button>
       </form>
+      <p className="text-center text-xs text-gray-400 mt-4">
+        Done resetting?{" "}
+        <Link
+          href="/sign-in"
+          className="text-gray-100 hover:underline hover:decoration-purple-400"
+        >
+          Sign in
+        </Link>
+      </p>
     </div>
   );
 };
