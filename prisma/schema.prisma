@@ -22,6 +22,8 @@ model User {
   emailVerified EmailVerified @default(FALSE)
   verificationToken String?
   verificationTokenExpires String?
+  forgotPasswordToken String?
+  forgotPasswordTokenExpires String?
 }
 
 model Product {

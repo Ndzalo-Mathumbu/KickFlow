@@ -16,7 +16,7 @@ const SuccessStyle = {
 };
 
 const ErrorDuration = {
-  duration: 6300,
+  duration: 7000,
 };
 const SuccessDuration = {
   duration: 5000,

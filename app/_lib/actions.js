@@ -18,8 +18,9 @@ import { authOptions } from "../_lib/auth";
 import { getServerSession } from "next-auth";
 import z, { success } from "zod";
 import bcrypt from "bcryptjs";
-import { VerifyEmail, WelcomeEmail } from "./email";
+import { ResetPasswordEmail, VerifyEmail, WelcomeEmail } from "./email";
 import { addMinutes } from "date-fns";
+import { SuccessAlert } from "../_components/Notifications";
 
 const getCurrentUser = async function () {
   const session = await getServerSession(authOptions);
@@ -128,7 +129,7 @@ export const createUser = async function (formData) {
   }
 
   const token = await generateToken(dataFromForm.email);
-  const expirationTime = addMinutes(new Date(), 15);
+  const expirationTime = addMinutes(new Date(), 10);
   await prisma.user.update({
     where: { email: dataFromForm.email },
     data: { verificationTokenExpires: expirationTime.toISOString() },
@@ -177,7 +178,8 @@ export const signInFormValidation = async function (formData) {
   }
 };
 
-export const newPasswordFormValidation = async function (formData) {
+// validate email in forgot password form
+export const forgotPasswordFormValidation = async function (formData) {
   const getFormDataValue = function (input) {
     const value = formData.get(input);
     return value;
@@ -197,19 +199,82 @@ export const newPasswordFormValidation = async function (formData) {
       message: validationResult.error.issues[0].message,
     };
   }
+
+  const userExist = await prisma.user.findUnique({
+    where: { email: dataFromForm.email },
+    select: { name: true, email: true },
+  });
+  if (!userExist) {
+    return {
+      success: false,
+      message: `If an account exists for this email, we've sent a password reset link.`,
+    };
+  }
+
+  if (userExist) {
+    const token = await generateToken(dataFromForm.email);
+    const expirationTime = addMinutes(new Date(), 10);
+
+    await prisma.user.update({
+      where: { email: dataFromForm.email },
+      data: {
+        forgotPasswordTokenExpires: expirationTime.toISOString(),
+        forgotPasswordToken: token,
+      },
+    });
+    await ResetPasswordEmail(dataFromForm.email, userExist.name, token);
+  }
   if (validationResult.success) {
     return {
       success: true,
     };
   }
+  return { userEmail: userExist.email };
+};
 
-  const userExist = await prisma.user.findUnique({
-    where: { email: dataFromForm.email },
+export const resetPasswordFormValidation = async function (formData) {
+  const { userEmail } = await forgotPasswordFormValidation();
+  const getFormDataValue = function (input) {
+    const value = formData.get(input);
+    return value;
+  };
+
+  const dataFromForm = {
+    password: getFormDataValue("newpassword"),
+  };
+
+  const createUserSchemaZOD = z.object({
+    password: z
+      .string()
+      .min(8, "Password must have at least 8 characters 😕.")
+      .regex(/[A-Z]/, "Password must include an uppercase letter 😕.")
+      .regex(/[a-z]/, "Password must include a lowercase letter 😕.")
+      .regex(/[0-9]/, "Password must include a number 😕.")
+      .regex(/[^A-Za-z0-9]/, "Password must include a special character 😕."),
   });
-  if (!userExist) {
+  const validationResult = createUserSchemaZOD.safeParse(dataFromForm);
+  if (!validationResult.success) {
     return {
       success: false,
-      message: ``,
+      message: validationResult.error.issues[0].message,
+    };
+  }
+
+  const resetPassword = await prisma.user.update({
+    where: { email: userEmail },
+    data: { password: dataFromForm.password },
+  });
+
+  if (resetPassword.password === dataFromForm.password) {
+    return {
+      success: true,
+      message: `Password successfully reset.`,
+    };
+  }
+
+  if (validationResult.success) {
+    return {
+      success: true,
     };
   }
 };
@@ -226,8 +291,10 @@ export const createUsers = async function () {
 
 // Delete One user
 export const deleteUser = async function () {
-  const { userID } = await getCurrentUser();
-  await prisma.user.delete({ where: { id: userID } });
+  // const { userID } = await getCurrentUser();
+  await prisma.user.delete({
+    where: { /* id: userID */ email: `ndzalonkmathumbu@gmail.com` },
+  });
 };
 
 // DeleteUsers

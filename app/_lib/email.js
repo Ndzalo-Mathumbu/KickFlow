@@ -39,3 +39,29 @@ export async function VerifyEmail(userEmail, userName, token) {
     `,
   });
 }
+
+export async function ResetPasswordEmail(userEmail, userName, token) {
+  await resend.emails.send({
+    from: "KickFlow <onboarding@resend.dev>",
+    to: userEmail,
+    subject: "Reset your KickFlow password",
+    html: `
+      <h1>Welcome ${userName}</h1>
+      <p>Here is your password resetting link click the following button to continue.</p>
+     <a
+  href="${process.env.NEXT_PUBLIC_URL}/reset-password?token=${token}"
+  style="
+    display:inline-block;
+    background:#7c3aed;
+    color:white;
+    padding:14px 24px;
+    text-decoration:none;
+    border-radius:8px;
+    font-weight:bold;
+  "
+>
+  Continue
+</a>
+    `,
+  });
+}
