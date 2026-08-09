@@ -218,7 +218,7 @@ export const forgotPasswordFormValidation = async function (formData) {
 
   if (userExist) {
     const token = generateForgotPasswordVerificationToken(dataFromForm.email);
-    const forgotPasswordExpirationTime = addMinutes(new Date(), 10);
+    const forgotPasswordExpirationTime = addMinutes(new Date(), 1);
 
     await prisma.user.update({
       where: { email: dataFromForm.email },

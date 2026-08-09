@@ -1,9 +1,12 @@
 import { redirect } from "next/navigation";
 import { prisma } from "../_lib/data-service";
+import AlertDestructive from "./AlertDestructive";
 
 const ResetPasswordEmail = async function ({ token }) {
   if (!token) {
-    return <h1>This reset password link is invalid 😕.</h1>;
+    return (
+      <AlertDestructive invalidLink="This reset password link is invalid 😕." />
+    );
   }
 
   const user = await prisma.user.findFirst({
@@ -34,10 +37,21 @@ const ResetPasswordEmail = async function ({ token }) {
     Number.isNaN(expiresAt.valueOf()) ||
     expiresAt <= new Date()
   ) {
-    return <h1>This password reset link has expired 😕.</h1>;
+    return (
+      <AlertDestructive expiredLink="This reset password link has expired 😕." />
+    );
   }
 
-  redirect("/sign-in");
+  if (user.emailVerified) {
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        forgotPasswordTokenExpires: null,
+      },
+    });
+  }
+
+  redirect("/reset-password");
 };
 
 export default ResetPasswordEmail;
