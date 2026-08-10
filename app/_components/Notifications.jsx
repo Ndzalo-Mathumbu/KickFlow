@@ -2,14 +2,14 @@
 import { toast } from "sonner";
 
 const ErrorStyle = {
-  background: "#111827",
+  background: "#fb2c361c",
   color: "#fff",
-  border: "1px solid #ef4444",
+  border: "1px solid #fb2c3672",
   borderRadius: "12px",
 };
 
 const SuccessStyle = {
-  background: "#111827",
+  background: " #15b91225",
   color: "#fff",
   border: "1px solid #15b912",
   borderRadius: "12px",

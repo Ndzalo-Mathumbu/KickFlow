@@ -23,7 +23,7 @@ export async function VerifyEmail(userEmail, userName, token) {
       <h1>Welcome ${userName}</h1>
       <p>Thanks for joining KickFlow. Click the following button to verify your email.</p>
      <a
-  href="${process.env.NEXT_PUBLIC_URL}/verify-email?token=${token}"
+  href="${process.env.NEXT_PUBLIC_URL}/sign-in?token=${token}&verified=true"
   style="
     display:inline-block;
     background:#7c3aed;

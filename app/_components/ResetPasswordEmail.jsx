@@ -19,12 +19,11 @@ const ResetPasswordEmail = async function ({ token }) {
     },
   });
 
+  console.log(user);
+
   if (!user) {
     return (
-      <h1>
-        Password reset link is invalid or has already been used fill in email
-        and send new link to your email 😕.
-      </h1>
+      <AlertDestructive userNoFound="Password reset link is invalid or has already been used 😕." />
     );
   }
 
@@ -32,6 +31,7 @@ const ResetPasswordEmail = async function ({ token }) {
     ? new Date(user.forgotPasswordTokenExpires)
     : null;
 
+  console.log(expiresAt);
   if (
     !expiresAt ||
     Number.isNaN(expiresAt.valueOf()) ||
@@ -42,16 +42,14 @@ const ResetPasswordEmail = async function ({ token }) {
     );
   }
 
-  if (user.emailVerified) {
+  if (user) {
     await prisma.user.update({
       where: { id: user.id },
       data: {
-        forgotPasswordTokenExpires: null,
+        forgotPasswordToken: null,
       },
     });
   }
-
-  redirect("/reset-password");
 };
 
 export default ResetPasswordEmail;

@@ -218,7 +218,7 @@ export const forgotPasswordFormValidation = async function (formData) {
 
   if (userExist) {
     const token = generateForgotPasswordVerificationToken(dataFromForm.email);
-    const forgotPasswordExpirationTime = addMinutes(new Date(), 1);
+    const forgotPasswordExpirationTime = addMinutes(new Date(), 10);
 
     await prisma.user.update({
       where: { email: dataFromForm.email },
@@ -239,6 +239,59 @@ export const forgotPasswordFormValidation = async function (formData) {
     return {
       success: true,
     };
+  }
+};
+
+export const sendNewEmailVerificationLink = async function (formData) {
+  const getFormDataValue = function (input) {
+    const value = formData.get(input);
+    return value;
+  };
+
+  const dataFromForm = {
+    email: getFormDataValue("email"),
+  };
+
+  const createUserSchemaZOD = z.object({
+    email: z.string().email("Email is required 😕."),
+  });
+  const validationResult = createUserSchemaZOD.safeParse(dataFromForm);
+  if (!validationResult.success) {
+    return {
+      success: false,
+      message: validationResult.error.issues[0].message,
+    };
+  }
+
+  const userExist = await prisma.user.findUnique({
+    where: { email: dataFromForm.email },
+    select: { id: true, name: true, email: true },
+  });
+  if (!userExist) {
+    return {
+      success: false,
+      message: `If an account exists for this email, we've sent a email verification link.`,
+    };
+  }
+
+  if (userExist) {
+    const token = generateForgotPasswordVerificationToken(dataFromForm.email);
+    const expirationTime = addMinutes(new Date(), 10);
+
+    await prisma.user.update({
+      where: { email: dataFromForm.email },
+      data: {
+        verificationTokenExpires: expirationTime.toISOString(),
+        verificationToken: token,
+      },
+    });
+    await VerifyEmail(userExist.email, userExist.name, token);
+
+    if (validationResult.success) {
+      return {
+        success: true,
+      };
+    }
   }
 };
 

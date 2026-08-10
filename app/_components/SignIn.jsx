@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import googleImage from "../../public/googleImage.png";
 import { signInFormValidation } from "../_lib/actions";
 import { LockKeyhole, Mail, UserRound } from "lucide-react";
@@ -11,16 +11,20 @@ import { redirect, useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 
 const SignInForm = function () {
-  const router = useRouter();
+  const toastShown = useRef(false);
   const searchParams = useSearchParams();
-  const verified = searchParams?.get("verified");
+  const verified = searchParams.get("verified");
+  console.log(verified);
   useEffect(() => {
-    console.log("Effect ran");
-    if (verified === "true") {
-      SuccessAlert("Email successfully verified. Log in to continue..");
-    }
-    router.replace("/sign-in?verified=true");
-  }, [verified, router]);
+    const timer = setTimeout(() => {
+      if (verified === "true" && !toastShown.current) {
+        toastShown.current = true;
+        SuccessAlert("Email successfully verified. Log in to continue.");
+      }
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, [verified]);
 
   const handleSubmit = async function (e) {
     e.preventDefault();

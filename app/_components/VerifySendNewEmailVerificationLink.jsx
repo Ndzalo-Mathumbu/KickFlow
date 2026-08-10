@@ -2,10 +2,10 @@ import { redirect } from "next/navigation";
 import { prisma } from "../_lib/data-service";
 import AlertDestructive from "./AlertDestructive";
 
-const VerifyEmail = async function ({ token }) {
+const VerifySendNewEmailVerificationLink = async function ({ token }) {
   if (!token) {
     return (
-      <AlertDestructive invalidLinkEmail="This verification link has invalid 😕." />
+      <AlertDestructive invalidLinkEmailSendNew="This verification link has invalid 😕." />
     );
   }
 
@@ -21,7 +21,7 @@ const VerifyEmail = async function ({ token }) {
 
   if (!user) {
     return (
-      <AlertDestructive userNoFoundEmail=" This verification link is invalid or has already been used 😕." />
+      <AlertDestructive userNoFoundEmailSendNew=" This verification link is invalid or has already been used 😕." />
     );
   }
 
@@ -35,15 +35,14 @@ const VerifyEmail = async function ({ token }) {
     expiresAt <= new Date()
   ) {
     return (
-      <AlertDestructive expiredLinkEmail="This verification link has expired 😕." />
+      <AlertDestructive expiredLinkEmailSendNew="This verification link has expired 😕." />
     );
   }
 
-  if (user.emailVerified !== "TRUE") {
+  if (user) {
     await prisma.user.update({
       where: { id: user.id },
       data: {
-        emailVerified: "TRUE",
         verificationToken: null,
       },
     });
@@ -52,4 +51,4 @@ const VerifyEmail = async function ({ token }) {
   /* redirect("/sign-in"); */
 };
 
-export default VerifyEmail;
+export default VerifySendNewEmailVerificationLink;
