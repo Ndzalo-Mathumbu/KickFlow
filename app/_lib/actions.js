@@ -21,6 +21,7 @@ import bcrypt from "bcryptjs";
 import { ResetPasswordEmail, VerifyEmail, WelcomeEmail } from "./email";
 import { addMinutes } from "date-fns";
 import { SuccessAlert } from "../_components/Notifications";
+import { error } from "node:console";
 
 const getCurrentUser = async function () {
   const session = await getServerSession(authOptions);
@@ -139,12 +140,29 @@ export const createUser = async function (formData) {
     where: { email: dataFromForm.email },
     data: { verificationTokenExpires: expirationTime.toISOString() },
   });
-  await WelcomeEmail(dataFromForm.email, dataFromForm.fullName);
-  await VerifyEmail(dataFromForm.email, dataFromForm.fullName, token);
-  return {
-    success: true,
-    message: "Welcome to KickFlow 🎉. Thanks for signing up 😀!",
-  };
+  const { error: welcomeErrorEmail } = await WelcomeEmail(
+    dataFromForm.email,
+    dataFromForm.fullName,
+  );
+  const { error: verifyEmailError } = await VerifyEmail(
+    dataFromForm.email,
+    dataFromForm.fullName,
+    token,
+  );
+
+  if (welcomeErrorEmail && verifyEmailError) {
+    return {
+      success: false,
+      message: `${error.message}`,
+    };
+  }
+  if (!welcomeErrorEmail && !verifyEmailError) {
+    return {
+      success: true,
+      message: `Check your emails.`,
+      welcomeMsg: "Welcome to KickFlow 🎉. Thanks for signing up!",
+    };
+  }
 };
 
 //validate user info before signing in
@@ -184,7 +202,16 @@ export const signInFormValidation = async function (formData) {
 };
 
 // validate email in forgot password form
-export const forgotPasswordFormValidation = async function (formData) {
+export const forgotPasswordFormValidation = async function (
+  formData,
+  remainingSec,
+) {
+  if (remainingSec > 0) {
+    return {
+      success: false,
+      message: `Wait for timer to finish.`,
+    };
+  }
   const getFormDataValue = function (input) {
     const value = formData.get(input);
     return value;
@@ -227,12 +254,25 @@ export const forgotPasswordFormValidation = async function (formData) {
         forgotPasswordToken: token,
       },
     });
-    await ResetPasswordEmail(
+    const { data, error } = await ResetPasswordEmail(
       dataFromForm.email,
       userExist.name,
       token,
       userExist.id,
     );
+
+    if (!error) {
+      return {
+        success: true,
+        message: `Password reset link sent to your email.`,
+      };
+    }
+    if (error) {
+      return {
+        success: false,
+        message: `${error.message}`,
+      };
+    }
   }
 
   if (validationResult.success) {
@@ -242,7 +282,16 @@ export const forgotPasswordFormValidation = async function (formData) {
   }
 };
 
-export const sendNewEmailVerificationLink = async function (formData) {
+export const sendNewEmailVerificationLink = async function (
+  formData,
+  remainingSec,
+) {
+  if (remainingSec > 0) {
+    return {
+      success: false,
+      message: `Wait for timer to finish.`,
+    };
+  }
   const getFormDataValue = function (input) {
     const value = formData.get(input);
     return value;
@@ -285,7 +334,20 @@ export const sendNewEmailVerificationLink = async function (formData) {
         verificationToken: token,
       },
     });
-    await VerifyEmail(userExist.email, userExist.name, token);
+    const { error } = await VerifyEmail(userExist.email, userExist.name, token);
+
+    if (!error) {
+      return {
+        success: true,
+        message: `Email verification link successfully sent.`,
+      };
+    }
+    if (error) {
+      return {
+        success: false,
+        message: `${error.message}`,
+      };
+    }
 
     if (validationResult.success) {
       return {

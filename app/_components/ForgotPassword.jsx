@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import googleImage from "../../public/googleImage.png";
 import { forgotPasswordFormValidation } from "../_lib/actions";
 import { LockKeyhole, Mail, UserRound } from "lucide-react";
@@ -11,12 +11,35 @@ import { redirect, useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 
 const ForgotPassword = function () {
+  const [remainingSec, setRemainingSec] = useState(0);
+  const handleTimer = function () {
+    setRemainingSec(60);
+    const timer = setInterval(() => {
+      setRemainingSec((a) => {
+        if (a === 0) {
+          clearInterval(timer);
+          return 0;
+        }
+        return a - 1;
+      });
+    }, 1000);
+    return () => clearInterval();
+  };
+
+  const minutes = Math.floor(remainingSec / 60);
+  const seconds = remainingSec % 60;
+  const formatted = `${minutes}:${String(seconds).padStart(2, "0")}`;
+
   const handleSubmit = async function (e) {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    const result = await forgotPasswordFormValidation(formData);
+    const result = await forgotPasswordFormValidation(formData, remainingSec);
     if (!result.success) {
       ErrorAlert(result.message);
+    }
+    if (result.success) {
+      SuccessAlert(result.message);
+      handleTimer();
     }
   };
   return (
@@ -42,7 +65,7 @@ const ForgotPassword = function () {
             </div>
           </div>
         </div>
-        <p className="text-[13px] text-gray-500 mt-3  ">Resend X</p>
+        <p className="text-[13px] text-gray-500 mt-3  ">Resend {formatted}</p>
         <button className="w-full rounded-md bg-purple-400 py-3 font-semibold mt-3 text-gray-900 hover:bg-purple-300 transition">
           Send link
         </button>

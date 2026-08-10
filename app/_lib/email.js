@@ -3,7 +3,7 @@ import { Resend } from "resend";
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function WelcomeEmail(userEmail, userName) {
-  await resend.emails.send({
+  const { data, error } = await resend.emails.send({
     from: "KickFlow <onboarding@resend.dev>",
     to: userEmail,
     subject: "Welcome to KickFlow 🎉",
@@ -12,10 +12,11 @@ export async function WelcomeEmail(userEmail, userName) {
       <p>Thanks for joining KickFlow...</p>
     `,
   });
+  return { data, error };
 }
 
 export async function VerifyEmail(userEmail, userName, token) {
-  await resend.emails.send({
+  const { data, error } = await resend.emails.send({
     from: "KickFlow <onboarding@resend.dev>",
     to: userEmail,
     subject: "Verify your KickFlow account",
@@ -38,10 +39,11 @@ export async function VerifyEmail(userEmail, userName, token) {
 </a>
     `,
   });
+  return { data, error };
 }
 
 export async function ResetPasswordEmail(userEmail, userName, token, userID) {
-  await resend.emails.send({
+  const { data, error } = await resend.emails.send({
     from: "KickFlow <onboarding@resend.dev>",
     to: userEmail,
     subject: "Reset your KickFlow password",
@@ -64,4 +66,5 @@ export async function ResetPasswordEmail(userEmail, userName, token, userID) {
 </a>
     `,
   });
+  return { data, error };
 }

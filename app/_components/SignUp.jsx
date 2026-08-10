@@ -16,7 +16,10 @@ const SignUpForm = function () {
       ErrorAlert(result.message);
       return;
     }
-    SuccessAlert(result.message);
+    SuccessAlert(result.welcomeMsg);
+    setTimeout(() => {
+      SuccessAlert(result.message);
+    }, 6400);
   };
 
   return (

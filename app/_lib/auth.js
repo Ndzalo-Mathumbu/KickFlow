@@ -82,8 +82,7 @@ export const authOptions = {
               email: user.email,
               name: user.name,
               avatar: user.image,
-              welcomeMessage:
-                "Welcome to KickFlow 🎉. Thanks for signing up 😀!",
+              welcomeMessage: "Welcome to KickFlow 🎉. Thanks for signing up!",
             },
           });
           await WelcomeEmail(newUserTwo.email, newUserTwo.name);

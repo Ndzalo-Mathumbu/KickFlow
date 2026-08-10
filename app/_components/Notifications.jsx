@@ -20,7 +20,7 @@ const ErrorDuration = {
   closeButton: true,
 };
 const SuccessDuration = {
-  duration: 5000,
+  duration: 4500,
   closeButton: true,
 };
 

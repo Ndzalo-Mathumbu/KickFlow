@@ -14,7 +14,7 @@ const SignInForm = function () {
   const toastShown = useRef(false);
   const searchParams = useSearchParams();
   const verified = searchParams.get("verified");
-  console.log(verified);
+
   useEffect(() => {
     const timer = setTimeout(() => {
       if (verified === "true" && !toastShown.current) {
@@ -44,7 +44,7 @@ const SignInForm = function () {
       ErrorAlert(`${signInResult.error} 😕.`);
     }
     if (signInResult.ok) {
-      SuccessAlert(`Successfully logged in 🎊.`);
+      SuccessAlert(`Successfully logged in.`);
       redirect(`${process.env.NEXT_PUBLIC_URL}`);
     }
   };
