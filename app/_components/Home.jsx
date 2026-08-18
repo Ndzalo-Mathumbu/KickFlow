@@ -36,7 +36,7 @@ const Home = function () {
         <video
           className="w-full md:h-[90vh] h-[45vh] object-cover"
           src={process.env.NEXT_PUBLIC_KICKFLOW_HERO_VIDEO}
-          autoPlay
+          /* autoPlay */
           muted
           loop
         ></video>

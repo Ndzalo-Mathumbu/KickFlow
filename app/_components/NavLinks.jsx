@@ -1,3 +1,4 @@
+"use client";
 import {
   LucideShoppingBag,
   ShoppingBag,
@@ -6,13 +7,18 @@ import {
   UserPlus,
 } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import Search from "./Searchbar";
+import { AccountDropDownMenu } from "./AccountDropdown";
+import { useState } from "react";
 
 const NavLinks = function () {
+  const pathName = usePathname();
+  const pathNameIshome = pathName === "/";
   return (
     <div className="flex  gap-6 text-lg">
-      <Link href="/wishlist" transitionTypes={["slide-in"]}>
-        Wishlist
-      </Link>
+      {!pathNameIshome && <Search />}
+
       <Link href="/trending" transitionTypes={["slide-in"]}>
         Trending
       </Link>
@@ -22,20 +28,20 @@ const NavLinks = function () {
       <Link href="/collections" transitionTypes={["slide-in"]}>
         Collections
       </Link>
+      {pathName === "/shop" || (
+        <Link href="/shop" transitionTypes={["slide-in"]}>
+          Shop
+        </Link>
+      )}
       <Link
         className="flex gap-2 hover:underline-offset-2"
         href="/cart"
         transitionTypes={["slide-in"]}
       >
-        Cart <ShoppingBag />
+        Cart
       </Link>
-      <Link
-        className="flex gap-2 hover:underline-offset-2"
-        href="/sign-up"
-        transitionTypes={["slide-in"]}
-      >
-        Create Account <UserPlus />
-      </Link>
+
+      <AccountDropDownMenu />
     </div>
   );
 };

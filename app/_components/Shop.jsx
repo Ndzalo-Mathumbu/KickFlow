@@ -1,4 +1,5 @@
-import {
+/* import {
+
   addToCart,
   createUser,
   createUsers,
@@ -53,6 +54,15 @@ const Shop = async function () {
       <button>change</button>
     </form>
   );
+};
+
+export default Shop;
+ */
+
+import Header from "./Header";
+
+const Shop = function () {
+  return <Header />;
 };
 
 export default Shop;
