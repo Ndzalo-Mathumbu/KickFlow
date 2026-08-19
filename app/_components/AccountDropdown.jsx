@@ -31,47 +31,37 @@ export function AccountDropDownMenu() {
         </DropdownMenuTrigger>
         <DropdownMenuContent
           align="end"
-          className="rounded-sm bg-[#363636] border-white border text-white"
+          className="rounded-sm border border-border bg-popover text-popover-foreground "
         >
-          <DropdownMenuItem
-            className="hover:rounded-sm hover:scale-105 transition-transform duration-200"
-          >
-            <UserIcon color="white" />
+          <DropdownMenuItem className="hover:rounded-sm hover:scale-105 transition-transform duration-200">
+            <UserIcon color="var(--color-brand)" />
             Profile
           </DropdownMenuItem>
 
-          <DropdownMenuItem
-            className="hover:rounded-none hover:scale-105 transition-transform duration-200"
-          >
-            <PackageCheckIcon color="white" />
+          <DropdownMenuItem className="hover:rounded-none hover:scale-105 transition-transform duration-200">
+            <PackageCheckIcon color="var(--color-brand)" />
             Orders
           </DropdownMenuItem>
 
-          <DropdownMenuItem
-            className="hover:rounded-none hover:scale-105 transition-transform duration-200"
-          >
-            <Heart color="white" />
+          <DropdownMenuItem className="hover:rounded-none hover:scale-105 transition-transform duration-200">
+            <Heart color="var(--color-brand)" />
             Wishlist
           </DropdownMenuItem>
 
-          <DropdownMenuItem
-            className="hover:rounded-none hover:scale-105 transition-transform duration-200"
-          >
-            <MapPinHouse color="white" />
+          <DropdownMenuItem className="hover:rounded-none hover:scale-105 transition-transform duration-200">
+            <MapPinHouse color="var(--color-brand)" />
             Addresses
           </DropdownMenuItem>
 
-          <DropdownMenuItem
-            className="hover:rounded-none hover:scale-105 transition-transform duration-200"
-          >
-            <SettingsIcon color="white" />
+          <DropdownMenuItem className="hover:rounded-none hover:scale-105 transition-transform duration-200">
+            <SettingsIcon color="var(--color-brand)" />
             Settings
           </DropdownMenuItem>
 
           <DropdownMenuSeparator />
 
           <DropdownMenuItem>
-            <LogInIcon color="white" />
+            <LogInIcon color="var(--color-brand)" />
             <Link href="/sign-up" transitionTypes={["slide-in"]}>
               Sign Up
             </Link>

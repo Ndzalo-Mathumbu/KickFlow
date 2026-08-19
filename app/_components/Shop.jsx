@@ -62,7 +62,11 @@ export default Shop;
 import Header from "./Header";
 
 const Shop = function () {
-  return <Header />;
+  return (
+    <>
+      <Header />
+    </>
+  );
 };
 
 export default Shop;
