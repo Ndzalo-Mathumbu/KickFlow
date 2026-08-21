@@ -87,6 +87,7 @@
   --color-input-hover: #f5f5f5;
   --color-input-disabled: #e5e5e5;
   --color-input-disabled-text: #a3a3a3;
+  --color-input-border-focus: #7c3aed;
 
   /* shadcn/ui aliases */
   --background: var(--color-background);
@@ -159,6 +160,7 @@
   --color-input-hover: #363636;
   --color-input-disabled: #1a1a1a;
   --color-input-disabled-text: #666666;
+  --color-input-border-focus: #7c3aed;
 
   /* shadcn/ui aliases */
   --background: var(--color-background);

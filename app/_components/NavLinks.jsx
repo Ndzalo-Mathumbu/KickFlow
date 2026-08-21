@@ -14,11 +14,8 @@ import { useState } from "react";
 
 const NavLinks = function () {
   const pathName = usePathname();
-  const pathNameIshome = pathName === "/";
   return (
     <div className="flex  gap-6 text-lg">
-      {!pathNameIshome && <Search />}
-
       <Link href="/trending" transitionTypes={["slide-in"]}>
         Trending
       </Link>
@@ -40,7 +37,6 @@ const NavLinks = function () {
       >
         Cart
       </Link>
-
       <AccountDropDownMenu />
     </div>
   );

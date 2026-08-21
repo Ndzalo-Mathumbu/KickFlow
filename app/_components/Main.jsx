@@ -1,6 +1,10 @@
-const Main = function ({ children }) {
+const Main = function ({ children, className }) {
   return (
-    <main /* className="flex justify-center items-center min-h-screen" */>
+    <main
+      className={
+        className
+      } /* className="flex justify-center items-center min-h-screen" */
+    >
       {children}
     </main>
   );

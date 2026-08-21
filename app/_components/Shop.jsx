@@ -60,12 +60,22 @@ export default Shop;
  */
 
 import Header from "./Header";
+import Sidebar from "./Sidebar";
 
 const Shop = function () {
   return (
-    <>
-      <Header />
-    </>
+    <div>
+      <p>
+        Lorem ipsum dolor sit, amet consectetur adipisicing elit. Sunt quibusdam
+        fugiat sed nulla vitae deserunt esse est magnam quis quas veniam, error
+        culpa expedita nesciunt facilis reiciendis nisi, laudantium sapiente.
+      </p>
+      <p>
+        Lorem ipsum dolor sit, amet consectetur adipisicing elit. Sunt quibusdam
+        fugiat sed nulla vitae deserunt esse est magnam quis quas veniam, error
+        culpa expedita nesciunt facilis reiciendis nisi, laudantium sapiente.
+      </p>
+    </div>
   );
 };
 

@@ -2,15 +2,19 @@
 import { usePathname } from "next/navigation";
 import Logo from "./Logo";
 import Navigation from "./Navigation";
+import Search from "./Searchbar";
 
-const Header = function () {
+const Header = function ({ className = "" }) {
   const pathName = usePathname();
   return (
-    <div className="flex items-center justify-between mt-7 h-11 bg-amber-900">
+    <header
+      className={`flex h-20 items-center justify-between bg-(--color-surface-secondary) px-5 border-b border-(--color-border) ${className}`}
+    >
       {pathName !== "/" || <Logo />}
       {/* <Logo /> */}
+      {pathName !== "/" && <Search />}
       <Navigation />
-    </div>
+    </header>
   );
 };
 export default Header;
