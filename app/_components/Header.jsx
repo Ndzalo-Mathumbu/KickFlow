@@ -8,7 +8,11 @@ const Header = function ({ className = "" }) {
   const pathName = usePathname();
   return (
     <header
-      className={`flex h-20 items-center justify-between bg-(--color-surface-secondary) px-5 border-b border-(--color-border) ${className}`}
+      className={`flex h-20 items-center justify-between md:px-5 ${
+        pathName === "/"
+          ? "bg-transparent border-transparent"
+          : "bg-(--color-surface-secondary) border-b border-(--color-border)"
+      } ${className} `}
     >
       {pathName !== "/" || <Logo />}
       {/* <Logo /> */}

@@ -19,15 +19,34 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/app/_components/UI/dropdown-menu";
-import { Button } from "./UI/button";
 import Link from "next/link";
+import Image from "next/image";
+import { noAvatarIconDark } from "../_lib/helper";
 
-export function AccountDropDownMenu() {
+export function AccountDropDownMenu({ userName = "john" }) {
   return (
     <>
       <DropdownMenu>
-        <DropdownMenuTrigger openOnHover closeDelay={200}>
-          Account
+        <DropdownMenuTrigger
+          openOnHover
+          closeDelay={200}
+          className={`flex items-center gap-2 whitespace-nowrap  ${userName ? "text-left" : "text-center"} `}
+        >
+          <div className="flex flex-col leading-tight">
+            <span>Account</span>
+            {userName && (
+              <span className="text-xs text-(--color-text-muted)">
+                johndoe@gmail.com
+              </span>
+            )}
+          </div>
+          <Image
+            src={noAvatarIconDark}
+            alt="No Avatar Icon"
+            width={50}
+            height={50}
+            className="shrink-0"
+          />
         </DropdownMenuTrigger>
         <DropdownMenuContent
           align="end"

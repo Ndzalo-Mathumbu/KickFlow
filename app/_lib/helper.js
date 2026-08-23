@@ -12,3 +12,9 @@ export const NewBLogoWhite =
 
 export const AdidasLogoWhite =
   "https://d1kwz9lny18c3r.cloudfront.net/images/Adidas_Logo_white-removebg.png";
+
+export const noAvatarIconDark =
+  "https://d1kwz9lny18c3r.cloudfront.net/images/no_avatar_image_dark_mode.png-removebg.png";
+
+export const noAvatarIconLight =
+  "https://d1kwz9lny18c3r.cloudfront.net/images/no_avatar_image_light_mode-removebg.png";

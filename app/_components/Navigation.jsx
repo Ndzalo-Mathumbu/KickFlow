@@ -2,7 +2,7 @@ import NavLinks from "./NavLinks";
 
 const Navigation = function () {
   return (
-    <div className=" pr-12">
+    <div className="">
       <NavLinks />
     </div>
   );
