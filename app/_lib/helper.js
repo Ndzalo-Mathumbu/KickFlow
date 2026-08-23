@@ -18,3 +18,15 @@ export const noAvatarIconDark =
 
 export const noAvatarIconLight =
   "https://d1kwz9lny18c3r.cloudfront.net/images/no_avatar_image_light_mode-removebg.png";
+
+export const KickflowDarkModeLogo =
+  "https://d1kwz9lny18c3r.cloudfront.net/images/KICKFLOW%20DARK%20MODE%20LOGO.png";
+
+export const KickflowLightModeLogo =
+  "https://d1kwz9lny18c3r.cloudfront.net/images/KICKFLOW%20LIGHT%20MODE%20LOGO%20(1).png";
+
+export const KickflowLightModeIcon =
+  "https://d1kwz9lny18c3r.cloudfront.net/images/kickflowIcon_lightMode_official-removebg.png";
+
+export const KickflowDarkModeIcon =
+  "https://d1kwz9lny18c3r.cloudfront.net/images/kickflowIcon_darkMode_official-removebg.png";

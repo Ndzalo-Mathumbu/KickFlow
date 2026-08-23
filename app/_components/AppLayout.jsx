@@ -19,11 +19,11 @@ const AppLayout = function ({ children }) {
   return (
     <div className="grid min-h-screen ">
       <ResizablePanelGroup orientation="horizontal">
-        <ResizablePanel defaultSize="20%" minSize={50} maxSize={350}>
+        <ResizablePanel defaultSize="23%" minSize={50} maxSize={320}>
           <Sidebar className="row-span-2" />
         </ResizablePanel>
         <ResizableHandle withHandle />
-        <ResizablePanel defaultSize="80%">
+        <ResizablePanel defaultSize="77%">
           <Header className="col-start-2 row-start-1 " />
           <Main className="col-start-2 row-start-2 bg-(--color-background) p-5 ">
             {children}
