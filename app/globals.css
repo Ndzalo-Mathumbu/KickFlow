@@ -124,6 +124,8 @@
 
   /* Surfaces */
   --color-surface-secondary: #242424;
+  --color-surface-secondaryTwo: rgb(81, 81, 81);
+
   --color-surface-card: #363636;
   --color-surface-hover: #4a4a4a;
   --color-surface-active: #555555;

@@ -9,6 +9,16 @@ import {
 } from "@/app/_components/UI/accordion";
 import { ArrowDownWideNarrow } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import Search from "./Searchbar";
+import { Checkbox } from "@/app/_components/UI/checkbox";
+import {
+  Field,
+  FieldDescription,
+  FieldGroup,
+  FieldLabel,
+  FieldLegend,
+  FieldSet,
+} from "@/app/_components/UI/field";
 
 const Sidebar = function ({ className = "" }) {
   const [sidebarWidth, setSidebarWidth] = useState(null);
@@ -23,8 +33,6 @@ const Sidebar = function ({ className = "" }) {
     observer.observe(sidebar);
     return () => observer.disconnect();
   }, []);
-
-  console.log(sidebarWidth, "sidebar width");
 
   return (
     <aside
@@ -56,12 +64,34 @@ const Sidebar = function ({ className = "" }) {
       <div
         className={`border border-t border-b mt-6 border-r-0 border-l-0 border-(--color-border) bg-(--color-surface-card) ${sidebarWidth <= 144 ? `invisible` : ``} `}
       >
-        <Accordion /* defaultValue={["categories"]} */ className="px-3">
-          <AccordionItem value="categories">
-            <AccordionTrigger className="text-lg">Categories</AccordionTrigger>
+        <Accordion /* defaultValue={["Brands"]} */ className="px-3">
+          <AccordionItem value="Brands">
+            <AccordionTrigger className="text-lg">Brands</AccordionTrigger>
             <AccordionContent className="text-(--color-text-secondary)">
-              We offer standard (5-7 days), express (2-3 days), and overnight
-              shipping. Free shipping on international orders.
+              <Search
+                searchIconHover="hover:scale-[1.01] transition-transform duration-200 "
+                placeholder="Search brands..."
+                className={`w-full p-1 bg-(--color-input-background) border-(color-input-border) border text-(--color-input-text) placeholder:text-(--color-input-placeholder) focus:ring-0 focus:outline-none rounded-sm `}
+              />
+              <FieldSet className="">
+                <FieldGroup className="gap-3">
+                  <FieldDescription className="pt-4 text-(--color-text-muted)">
+                    Select Brands
+                  </FieldDescription>
+                  <Field
+                    orientation="horizontal"
+                    className=" relative bottom-3"
+                  >
+                    <Checkbox id="brands" name="brands" /* defaultChecked */ />
+                    <FieldLabel
+                      htmlFor="brands"
+                      className={`text-(--color-text-secondary)`}
+                    >
+                      Hard disks
+                    </FieldLabel>
+                  </Field>
+                </FieldGroup>
+              </FieldSet>
             </AccordionContent>
           </AccordionItem>
         </Accordion>
