@@ -102,7 +102,8 @@ export const getOrder = async function (userID) {
   return orderAvailable;
 };
 
+//get all products
 export const getProducts = async function () {
   const products = await prisma.product.findMany();
-  console.log(products, "brandss");
+  return products;
 };

@@ -61,7 +61,6 @@ export default Shop;
 
 import Header from "./Header";
 import Sidebar from "./Sidebar";
-import { Tester } from "./test";
 
 const Shop = function () {
   return (
@@ -76,7 +75,6 @@ const Shop = function () {
         fugiat sed nulla vitae deserunt esse est magnam quis quas veniam, error
         culpa expedita nesciunt facilis reiciendis nisi, laudantium sapiente.
       </p>
-      <Tester />
     </div>
   );
 };
