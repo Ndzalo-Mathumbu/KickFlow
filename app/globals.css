@@ -89,6 +89,12 @@
   --color-input-disabled-text: #a3a3a3;
   --color-input-border-focus: #7c3aed;
 
+  /* Skeleton */
+  --color-skeleton: #e5e5e5;
+  --color-skeleton-inner: #d4d4d4;
+  --color-skeleton-detail: #c4c4c4;
+  --color-skeleton-shimmer: #eeeeee;
+
   /* shadcn/ui aliases */
   --background: var(--color-background);
   --foreground: var(--color-text-primary);
@@ -163,6 +169,11 @@
   --color-input-disabled: #1a1a1a;
   --color-input-disabled-text: #666666;
   --color-input-border-focus: #7c3aed;
+
+  --color-skeleton: #363636;
+  --color-skeleton-inner: #4a4a4a;
+  --color-skeleton-detail: #555555;
+  --color-skeleton-shimmer: #5e5e5e;
 
   /* shadcn/ui aliases */
   --background: var(--color-background);
