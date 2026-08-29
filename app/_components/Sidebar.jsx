@@ -54,11 +54,12 @@ const Sidebar = function ({ className = "" }) {
     .flat()
     .sort((a, b) => a - b);
   const size = [...new Set(sneakerSizes.map((a) => a))];
+  const availability = [...new Set(sneaker.map((a) => a.stock))];
 
   return (
     <aside
       ref={sidebarRef}
-      className={`h-full bg-(--color-surface-secondary) overflow-hidden border-(--color-border) border-r ${className} flex flex-col items-center`}
+      className={`h-full  bg-(--color-surface-secondary) overflow-hidden border-(--color-border) border-r ${className} flex flex-col items-center`}
     >
       {isLoadingKickFlowIcon ? (
         <Skeleton
@@ -107,7 +108,7 @@ const Sidebar = function ({ className = "" }) {
             </div>
           ) : (
             <div
-              className={`flex  items-center justify-between w-full px-3  py-3 border-t   border-b-0  border-l-0  border-r-0 border-4 border-(--color-border-strong) ${sidebarWidth <= 144 ? `invisible` : ``} `}
+              className={`flex  items-center justify-between w-full px-3  py-3 border-t   border-b-0  border-l-0  border-r-0 border-4 border-(--color-border-strong) ${sidebarWidth <= 144 ? `opacity-0 transition-opacity duration-200` : ``} `}
             >
               <p className="flex">
                 FILTERS <ArrowDownWideNarrow />
@@ -122,7 +123,7 @@ const Sidebar = function ({ className = "" }) {
         <SidebarShopAccordionSkeleton />
       ) : (
         <div
-          className={`border border-t border-b mt-6 border-r-0 border-l-0 border-(--color-border) bg-(--color-surface-card) ${sidebarWidth <= 144 ? `invisible` : ``} overflow-y-auto w-full`}
+          className={`border border-t border-b mt-6 border-r-0 border-l-0 border-(--color-border) bg-(--color-surface-card) ${sidebarWidth <= 144 ? `opacity-0 transition-opacity duration-200` : ``} overflow-y-auto w-full`}
         >
           <SidebarShopAccordion
             brands={brands}
@@ -134,6 +135,7 @@ const Sidebar = function ({ className = "" }) {
             onPriceRange={setPriceRange}
             minPrice={minPrice}
             maxPrice={maxPrice}
+            availability={availability}
           />
         </div>
       )}
