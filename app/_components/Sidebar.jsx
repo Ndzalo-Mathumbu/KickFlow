@@ -8,17 +8,21 @@ import { Skeleton } from "./UI/skeleton";
 import SidebarShopAccordion from "./SidebarShopAccordion";
 import SidebarShopAccordionSkeleton from "./SidebarShopAccordionSkeleton";
 import { selectPriceRange } from "../_lib/selectPriceRange";
+import { useParams, useSearchParams } from "next/navigation";
 
 const Sidebar = function ({ className = "" }) {
   const [sidebarWidth, setSidebarWidth] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingKickFlowIcon, setIsLoadingKickFlowIcon] = useState(true);
   const [sneaker, setSneaker] = useState([]);
+  const [filteredSneaker, setFilteredSneakerSneaker] = useState([]);
+
   const { minPrice, maxPrice } = selectPriceRange(sneaker);
   const [priceRange, setPriceRange] = useState([minPrice, maxPrice]);
-  console.log(priceRange, `this is priceRange`);
 
   const sidebarRef = useRef(null);
+  const search = useSearchParams();
+  const urlQueryString = search.toString();
 
   useEffect(() => {
     if (KickflowDarkModeIcon) {
@@ -35,15 +39,29 @@ const Sidebar = function ({ className = "" }) {
     observer.observe(sidebar);
 
     const getProductsData = async function () {
-      const res = await fetch("/api/products");
+      const res = await fetch(`/api/products`);
+
       const data = await res.json();
+
       setSneaker(data);
       setIsLoading(false);
     };
 
+    const getFilteredProductsData = async function () {
+      const res = await fetch(`/api/filteredProducts?${urlQueryString}`);
+
+      const data = await res.json();
+
+      setFilteredSneakerSneaker(data);
+      setIsLoading(false);
+    };
+    urlQueryString ? getFilteredProductsData() : setFilteredSneakerSneaker([]);
     getProductsData();
     return () => observer.disconnect();
-  }, []);
+  }, [urlQueryString]);
+
+  console.log(sneaker, `Not filtered Sneaker`);
+  console.log(filteredSneaker, `filtered sneaker`);
 
   const brands = [...new Set(sneaker.map((a) => a.brand))];
   const categories = [...new Set(sneaker.map((a) => a.category))];
@@ -59,7 +77,7 @@ const Sidebar = function ({ className = "" }) {
   return (
     <aside
       ref={sidebarRef}
-      className={`h-full  bg-(--color-surface-secondary) overflow-hidden border-(--color-border) border-r ${className} flex flex-col items-center`}
+      className={`h-full  bg-(--color-surface-secondary) custom-scrollbar overflow-hidden border-(--color-border) border-r ${className} flex flex-col items-center`}
     >
       {isLoadingKickFlowIcon ? (
         <Skeleton
@@ -80,7 +98,7 @@ const Sidebar = function ({ className = "" }) {
       <>
         {isLoading ? (
           <div
-            className={`my-12 w-[calc(100%-4rem)] rounded-md flex items-center justify-center h-8 bg-(--color-skeleton)`}
+            className={`my-12   w-[calc(100%-4rem)] rounded-md flex items-center justify-center h-8 bg-(--color-skeleton) ${filteredSneaker.length === 0 ? `hidden` : ``}`}
           >
             <Skeleton
               className={`w-[90%] h-5 bg-(--color-skeleton-inner) `}
@@ -88,9 +106,26 @@ const Sidebar = function ({ className = "" }) {
           </div>
         ) : (
           <div
-            className={`my-12 w-[calc(100%-4rem)] bg-(--color-surface-card)/90 px-3 rounded-md ${sidebarWidth <= 144 ? `invisible` : ``}`}
+            className={`mt-12 flex items-center justify-center w-[calc(100%-4rem)] bg-(--color-surface-card)/90 px-3 rounded-md ${sidebarWidth <= 144 ? `invisible` : ``} 
+             ${filteredSneaker.length === 0 ? "hidden " : ""} `}
           >
-            <p className="text-lg">{`Explore ${sneaker.length} Sneakers`}</p>
+            <p className="text-lg">{`Explore ${filteredSneaker.length} Sneakers`}</p>
+          </div>
+        )}
+
+        {isLoading ? (
+          <div
+            className={`my-12 w-[calc(100%-4rem)] rounded-md flex items-center justify-center h-8 bg-(--color-skeleton)  ${filteredSneaker.length > 0 ? `relative bottom-6 mt-2` : ``}`}
+          >
+            <Skeleton
+              className={`w-[90%] h-5 bg-(--color-skeleton-inner) `}
+            ></Skeleton>
+          </div>
+        ) : (
+          <div
+            className={`my-12 flex items-center justify-center w-[calc(100%-4rem)] bg-(--color-surface-card)/90 px-3 rounded-md ${sidebarWidth <= 144 ? `invisible` : ``}`}
+          >
+            <p className="text-lg">{`${sneaker.length} Sneakers Available`}</p>
           </div>
         )}
 

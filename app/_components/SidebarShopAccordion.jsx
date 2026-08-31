@@ -1,3 +1,4 @@
+"use client";
 import { Checkbox } from "./UI/checkbox";
 import {
   Field,
@@ -17,7 +18,8 @@ import { Skeleton } from "./UI/skeleton";
 import { Slider } from "./UI/slider";
 import { RadioGroup, RadioGroupItem } from "./UI/radio-group";
 import { Label } from "./UI/label";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const SidebarShopAccordion = function ({
   brands,
@@ -32,6 +34,15 @@ const SidebarShopAccordion = function ({
   availability,
 }) {
   const [accordionValue, setAccordionValue] = useState([]);
+  const [selectedBrand, setSelectedBrand] = useState([]);
+  const router = useRouter();
+
+  /*  const getFilteredSneakers = async function () {
+    const res = await fetch(URL);
+    const data = await res.json();
+    return data;
+  }; */
+
   const sale = ["All", "On sale", "Not on sale"];
   useEffect(() => {
     if (accordionValue.length > 0) {
@@ -40,11 +51,20 @@ const SidebarShopAccordion = function ({
     if (accordionValue === 0) {
       document.documentElement.style.overflow = "";
     }
+
+    const params = new URLSearchParams();
+
+    selectedBrand.forEach((a) => params.append(`brand`, a));
+
+    router.push(`/shop?${params.toString()}`);
+
     return () => {
       document.documentElement.style.overflow = "";
     };
-  }, [accordionValue]);
-  console.log(accordionValue, `this is value`);
+  }, [accordionValue, router, selectedBrand]);
+
+  //   router.push(`/shop?${params.toString()}`);
+
   return (
     <Accordion
       /* defaultValue={["Brands"]} */ value={accordionValue}
@@ -68,7 +88,9 @@ const SidebarShopAccordion = function ({
                 Select Brand
               </FieldDescription>
 
-              <div className={`max-h-[25vh] overflow-y-auto pt-2 `}>
+              <div
+                className={`max-h-[25vh]  custom-scrollbar  overflow-y-auto pt-2 `}
+              >
                 {isLoading
                   ? `Loading...`
                   : brands.map((a) => (
@@ -79,7 +101,19 @@ const SidebarShopAccordion = function ({
                           key={a}
                         >
                           <Checkbox
-                            id="brands"
+                            checked={selectedBrand.includes(a)}
+                            value={a}
+                            onCheckedChange={(checked) =>
+                              checked
+                                ? setSelectedBrand((sneakerBrand) => [
+                                    ...sneakerBrand,
+                                    a,
+                                  ])
+                                : setSelectedBrand((sneakerBrand) =>
+                                    sneakerBrand.filter((brand) => brand !== a),
+                                  )
+                            }
+                            id={`brand-${a}`}
                             name="brands" /* defaultChecked */
                           />
                           <FieldLabel
@@ -109,7 +143,9 @@ const SidebarShopAccordion = function ({
               <FieldDescription className="pt-4 text-(--color-text-muted) ">
                 Select Category
               </FieldDescription>
-              <div className={`max-h-[25vh] overflow-y-auto pt-2 `}>
+              <div
+                className={`max-h-[25vh]  custom-scrollbar  overflow-y-auto pt-2 `}
+              >
                 {categories.map((a) => (
                   <>
                     <Field orientation="horizontal" className="py-1" key={a}>
@@ -144,7 +180,9 @@ const SidebarShopAccordion = function ({
               <FieldDescription className="pt-4 text-(--color-text-muted) ">
                 Select Colour
               </FieldDescription>
-              <div className={`max-h-[25vh] overflow-y-auto  pt-2 `}>
+              <div
+                className={`max-h-[25vh]  custom-scrollbar  overflow-y-auto  pt-2 `}
+              >
                 {colour.map((a) => (
                   <>
                     <Field orientation="horizontal" className="py-1" key={a}>
@@ -179,7 +217,9 @@ const SidebarShopAccordion = function ({
               <FieldDescription className="pt-4 text-(--color-text-muted) ">
                 Select Size
               </FieldDescription>
-              <div className={`max-h-[25vh] overflow-y-auto  pt-2 `}>
+              <div
+                className={`max-h-[25vh]  custom-scrollbar  overflow-y-auto  pt-2 `}
+              >
                 {size.map((a) => (
                   <>
                     <Field orientation="horizontal" className="py-1" key={a}>

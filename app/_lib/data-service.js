@@ -103,7 +103,20 @@ export const getOrder = async function (userID) {
 };
 
 //get all products
-export const getProducts = async function () {
-  const products = await prisma.product.findMany();
-  return products;
+export const getProducts = async function (brand) {
+  const filters = { brand };
+  if (filters) {
+    const products = await prisma.product.findMany({
+      where: {
+        brand: {
+          in: brand,
+        },
+      },
+    });
+    return products;
+  }
+  if (brand.length === 0) {
+    const products = await prisma.product.findMany();
+    return products;
+  }
 };
