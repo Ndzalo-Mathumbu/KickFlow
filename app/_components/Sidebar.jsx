@@ -15,7 +15,7 @@ const Sidebar = function ({ className = "" }) {
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingKickFlowIcon, setIsLoadingKickFlowIcon] = useState(true);
   const [sneaker, setSneaker] = useState([]);
-  const [filteredSneaker, setFilteredSneakerSneaker] = useState([]);
+  const [filteredSneaker, setFilteredSneaker] = useState([]);
 
   const { minPrice, maxPrice } = selectPriceRange(sneaker);
   const [priceRange, setPriceRange] = useState([minPrice, maxPrice]);
@@ -52,10 +52,10 @@ const Sidebar = function ({ className = "" }) {
 
       const data = await res.json();
 
-      setFilteredSneakerSneaker(data);
+      setFilteredSneaker(data);
       setIsLoading(false);
     };
-    urlQueryString ? getFilteredProductsData() : setFilteredSneakerSneaker([]);
+    urlQueryString ? getFilteredProductsData() : setFilteredSneaker([]);
     getProductsData();
     return () => observer.disconnect();
   }, [urlQueryString]);

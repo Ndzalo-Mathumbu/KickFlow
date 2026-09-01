@@ -33,15 +33,16 @@ const SidebarShopAccordion = function ({
   maxPrice,
   availability,
 }) {
+  const search = useSearchParams();
   const [accordionValue, setAccordionValue] = useState([]);
-  const [selectedBrand, setSelectedBrand] = useState([]);
-  const router = useRouter();
+  const [selectedBrand, setSelectedBrand] = useState(() =>
+    search.getAll(`brand`),
+  );
+  const [selectedCategory, setSelectedCategory] = useState(() =>
+    search.getAll(`category`),
+  );
 
-  /*  const getFilteredSneakers = async function () {
-    const res = await fetch(URL);
-    const data = await res.json();
-    return data;
-  }; */
+  const router = useRouter();
 
   const sale = ["All", "On sale", "Not on sale"];
   useEffect(() => {
@@ -55,15 +56,16 @@ const SidebarShopAccordion = function ({
     const params = new URLSearchParams();
 
     selectedBrand.forEach((a) => params.append(`brand`, a));
+    selectedCategory.forEach((a) => params.append(`category`, a));
 
     router.push(`/shop?${params.toString()}`);
 
     return () => {
       document.documentElement.style.overflow = "";
     };
-  }, [accordionValue, router, selectedBrand]);
+  }, [accordionValue, router, selectedBrand, selectedCategory]);
 
-  //   router.push(`/shop?${params.toString()}`);
+  console.log(selectedCategory);
 
   return (
     <Accordion
@@ -152,9 +154,21 @@ const SidebarShopAccordion = function ({
                       <Checkbox
                         id="categories"
                         name="categories" /* defaultChecked */
+                        value={a}
+                        checked={selectedCategory.includes(a)}
+                        onCheckedChange={(checked) => {
+                          checked
+                            ? setSelectedCategory((sneakerCategory) => [
+                                ...sneakerCategory,
+                                a,
+                              ])
+                            : setSelectedCategory((category) =>
+                                category.filter((z) => z !== a),
+                              );
+                        }}
                       />
                       <FieldLabel
-                        htmlFor="categories"
+                        htmlFor={`categories-${a}`}
                         className={`text-(--color-text-secondary)`}
                       >
                         {a}
