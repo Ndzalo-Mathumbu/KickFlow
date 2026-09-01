@@ -103,7 +103,14 @@ export const getOrder = async function (userID) {
 };
 
 //get all products
-export const getProducts = async function (brand = [], category = []) {
+export const getProducts = async function (
+  brand = [],
+  category = [],
+  colour = [],
+  size = [],
+  min_Price,
+  max_Price,
+) {
   const where = {};
 
   if (brand.length > 0) {
@@ -120,7 +127,40 @@ export const getProducts = async function (brand = [], category = []) {
     return await prisma.product.findMany({ where });
   }
 
-  if (brand.length === 0 && category.length === 0) {
+  if (colour.length > 0) {
+    return await prisma.product.findMany({
+      where: {
+        color: {
+          in: colour,
+        },
+      },
+    });
+  }
+
+  if (size.length > 0) {
+    where.size = {
+      hasSome: size.map((a) => +a),
+    };
+    return await prisma.product.findMany({ where });
+  }
+
+  if (min_Price > 0) {
+    return await prisma.product.findMany({
+      where: {
+        price: {
+          gte: +min_Price,
+          lte: +max_Price,
+        },
+      },
+    });
+  }
+
+  if (
+    brand.length === 0 &&
+    category.length === 0 &&
+    colour.length === 0 &&
+    size.length === 0
+  ) {
     const products = await prisma.product.findMany();
     return products;
   }

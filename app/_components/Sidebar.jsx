@@ -11,6 +11,7 @@ import { selectPriceRange } from "../_lib/selectPriceRange";
 import { useParams, useSearchParams } from "next/navigation";
 
 const Sidebar = function ({ className = "" }) {
+  const search = useSearchParams();
   const [sidebarWidth, setSidebarWidth] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingKickFlowIcon, setIsLoadingKickFlowIcon] = useState(true);
@@ -21,7 +22,6 @@ const Sidebar = function ({ className = "" }) {
   const [priceRange, setPriceRange] = useState([minPrice, maxPrice]);
 
   const sidebarRef = useRef(null);
-  const search = useSearchParams();
   const urlQueryString = search.toString();
 
   useEffect(() => {

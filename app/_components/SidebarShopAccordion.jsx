@@ -20,6 +20,7 @@ import { RadioGroup, RadioGroupItem } from "./UI/radio-group";
 import { Label } from "./UI/label";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { check } from "zod";
 
 const SidebarShopAccordion = function ({
   brands,
@@ -41,6 +42,13 @@ const SidebarShopAccordion = function ({
   const [selectedCategory, setSelectedCategory] = useState(() =>
     search.getAll(`category`),
   );
+  const [selectedColour, setSelectedColour] = useState(() =>
+    search.getAll(`colour`),
+  );
+  const [selectedSize, setSelectedSize] = useState(() =>
+    search.getAll(`size`).map((a) => +a),
+  );
+  const [selectedMinPrice, selectedMaxPrice] = priceRange;
 
   const router = useRouter();
 
@@ -55,17 +63,37 @@ const SidebarShopAccordion = function ({
 
     const params = new URLSearchParams();
 
+    if (selectedMinPrice > 0) {
+      params.append("min_price", String(selectedMinPrice));
+      params.append("max_price", String(selectedMaxPrice));
+    }
+
     selectedBrand.forEach((a) => params.append(`brand`, a));
     selectedCategory.forEach((a) => params.append(`category`, a));
+    selectedColour.forEach((a) => params.append(`colour`, a));
+    selectedSize.forEach((a) => params.append(`size`, a));
 
     router.push(`/shop?${params.toString()}`);
 
     return () => {
       document.documentElement.style.overflow = "";
     };
-  }, [accordionValue, router, selectedBrand, selectedCategory]);
+  }, [
+    accordionValue,
+    router,
+    selectedBrand,
+    selectedCategory,
+    selectedColour,
+    selectedSize,
+    maxPrice,
+    minPrice,
+    selectedMinPrice,
+    selectedMaxPrice,
+  ]);
 
-  console.log(selectedCategory);
+  console.log(selectedCategory, `this is for selectedcategory`);
+  console.log(selectedColour, `for selectedColour`);
+  console.log(selectedSize, `for selectedSize`);
 
   return (
     <Accordion
@@ -201,11 +229,24 @@ const SidebarShopAccordion = function ({
                   <>
                     <Field orientation="horizontal" className="py-1" key={a}>
                       <Checkbox
+                        value={a}
+                        checked={selectedColour.includes(a)}
                         id="colour"
-                        name="colour" /* defaultChecked */
+                        name="colour"
+                        onCheckedChange={(checked) => {
+                          checked
+                            ? setSelectedColour((sneakerColour) => {
+                                return [...sneakerColour, a];
+                              })
+                            : setSelectedColour((filterSneakerColour) => {
+                                return filterSneakerColour.filter(
+                                  (z) => z !== a,
+                                );
+                              });
+                        }}
                       />
                       <FieldLabel
-                        htmlFor="colour"
+                        htmlFor={`colour-${a}`}
                         className={`text-(--color-text-secondary)`}
                       >
                         {a}
@@ -237,9 +278,23 @@ const SidebarShopAccordion = function ({
                 {size.map((a) => (
                   <>
                     <Field orientation="horizontal" className="py-1" key={a}>
-                      <Checkbox id="size" name="size" /* defaultChecked */ />
+                      <Checkbox
+                        id="size"
+                        name="size"
+                        value={a}
+                        checked={selectedSize.includes(a)}
+                        onCheckedChange={(checked) => {
+                          checked
+                            ? setSelectedSize((sneakerSize) => {
+                                return [...sneakerSize, a];
+                              })
+                            : setSelectedSize((filterSneakerSize) => {
+                                return filterSneakerSize.filter((z) => z !== a);
+                              });
+                        }}
+                      />
                       <FieldLabel
-                        htmlFor="size"
+                        htmlFor={`size-${a}`}
                         className={`text-(--color-text-secondary)`}
                       >
                         {a}
