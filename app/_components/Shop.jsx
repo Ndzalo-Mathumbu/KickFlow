@@ -59,22 +59,37 @@ const Shop = async function () {
 export default Shop;
  */
 
+import { ArrowDownUp } from "lucide-react";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
 
 const Shop = function () {
   return (
-    <div>
-      <p>
-        Lorem ipsum dolor sit, amet consectetur adipisicing elit. Sunt quibusdam
-        fugiat sed nulla vitae deserunt esse est magnam quis quas veniam, error
-        culpa expedita nesciunt facilis reiciendis nisi, laudantium sapiente.
-      </p>
-      <p>
-        Lorem ipsum dolor sit, amet consectetur adipisicing elit. Sunt quibusdam
-        fugiat sed nulla vitae deserunt esse est magnam quis quas veniam, error
-        culpa expedita nesciunt facilis reiciendis nisi, laudantium sapiente.
-      </p>
+    <div className="flex items-center justify-between mt-8">
+      <div className="bg-(--color-surface-secondaryTwo)/45 border-[1.8px] border-(--color-border) w-[12vw] h-[5vh] flex items-center justify-center text-(--color-text-secondary)">
+        <p className="flex">Filters Applied: 6</p>
+      </div>
+
+      <div className="flex items-center gap-5">
+        <div className="bg-(--color-surface-secondaryTwo)/45 border-[1.8px] border-(--color-border) w-[8vw] h-[5vh] flex items-center justify-center text-(--color-text-secondary)">
+          <p className="flex items-center gap-3">
+            {" "}
+            Sort By <ArrowDownUp />
+          </p>
+        </div>
+
+        <div className="bg-(--color-surface-secondaryTwo)/45 border-[1.8px] border-(--color-border)  w-[25vw] h-[5vh] flex items-center justify-center  divide-x divide-(--color-border) text-(--color-text-secondary)">
+          <p className="px-4 cursor-pointer transition-transform duration-150 hover:bg-(--color-surface-hover)">
+            Featured
+          </p>
+          <p className="px-4 transition-transform duration-150 hover:bg-(--color-surface-hover) cursor-pointer">
+            Newest
+          </p>
+          <p className="px-4 transition-transform duration-150 hover:bg-(--color-surface-hover) cursor-pointer">
+            Most Popular
+          </p>
+        </div>
+      </div>
     </div>
   );
 };
