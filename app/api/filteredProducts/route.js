@@ -2,16 +2,21 @@ import { getProducts } from "@/app/_lib/data-service";
 import { NextResponse } from "next/server";
 
 export const GET = async function (request) {
-  const urlParameter = function (value) {
+  const urlParameters = function (value) {
     return request.nextUrl.searchParams.getAll(value);
   };
+  const urlParameter = function (value) {
+    return request.nextUrl.searchParams.get(value);
+  };
 
-  const brand = urlParameter(`brand`);
-  const category = urlParameter(`category`);
-  const colour = urlParameter(`colour`);
-  const size = urlParameter(`size`);
-  const min_Price = urlParameter(`min_price`);
-  const max_Price = urlParameter(`max_price`);
+  const brand = urlParameters(`brand`);
+  const category = urlParameters(`category`);
+  const colour = urlParameters(`colour`);
+  const size = urlParameters(`size`);
+  const min_Price = urlParameters(`min_price`);
+  const max_Price = urlParameters(`max_price`);
+  const stock = urlParameters(`stock`);
+  const sale = urlParameter(`sale`);
 
   console.log(brand, `BRANDY`);
   console.log(category, `category`);
@@ -23,6 +28,8 @@ export const GET = async function (request) {
     size,
     min_Price,
     max_Price,
+    stock,
+    sale,
   );
 
   return NextResponse.json(products);

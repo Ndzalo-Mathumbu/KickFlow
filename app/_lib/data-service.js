@@ -110,6 +110,8 @@ export const getProducts = async function (
   size = [],
   min_Price,
   max_Price,
+  stock = [],
+  sale = `All`,
 ) {
   const where = {};
 
@@ -155,11 +157,39 @@ export const getProducts = async function (
     });
   }
 
+  if (stock.length > 0) {
+    where.stock = {
+      in: stock,
+    };
+    return await prisma.product.findMany({ where });
+  }
+
+  if (sale === `All`) {
+    return await prisma.product.findMany();
+  }
+
+  if (sale === `On sale`) {
+    return await prisma.product.findMany({
+      where: {
+        sale: true,
+      },
+    });
+  }
+
+  if (sale === `Not on sale`) {
+    return await prisma.product.findMany({
+      where: {
+        sale: false,
+      },
+    });
+  }
+
   if (
     brand.length === 0 &&
     category.length === 0 &&
     colour.length === 0 &&
-    size.length === 0
+    size.length === 0 &&
+    stock.length === 0
   ) {
     const products = await prisma.product.findMany();
     return products;

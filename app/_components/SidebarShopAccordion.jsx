@@ -33,26 +33,28 @@ const SidebarShopAccordion = function ({
   minPrice,
   maxPrice,
   availability,
+
+  selectedSale,
+  selectedBrand,
+  selectedCategory,
+  selectedColour,
+  selectedSize,
+  selectedAvailability,
+
+  setSelectedSale,
+  setSelectedBrand,
+  setSelectedCategory,
+  setSelectedColour,
+  setSelectedSize,
+  setSelectedAvailability,
 }) {
-  const search = useSearchParams();
+  const sale = ["All", "On sale", "Not on sale"];
   const [accordionValue, setAccordionValue] = useState([]);
-  const [selectedBrand, setSelectedBrand] = useState(() =>
-    search.getAll(`brand`),
-  );
-  const [selectedCategory, setSelectedCategory] = useState(() =>
-    search.getAll(`category`),
-  );
-  const [selectedColour, setSelectedColour] = useState(() =>
-    search.getAll(`colour`),
-  );
-  const [selectedSize, setSelectedSize] = useState(() =>
-    search.getAll(`size`).map((a) => +a),
-  );
+
   const [selectedMinPrice, selectedMaxPrice] = priceRange;
 
   const router = useRouter();
 
-  const sale = ["All", "On sale", "Not on sale"];
   useEffect(() => {
     if (accordionValue.length > 0) {
       document.documentElement.style.overflow = `hidden`;
@@ -68,10 +70,15 @@ const SidebarShopAccordion = function ({
       params.append("max_price", String(selectedMaxPrice));
     }
 
+    if (selectedSale.length > 0) {
+      params.set(`sale`, selectedSale);
+    }
+
     selectedBrand.forEach((a) => params.append(`brand`, a));
     selectedCategory.forEach((a) => params.append(`category`, a));
     selectedColour.forEach((a) => params.append(`colour`, a));
     selectedSize.forEach((a) => params.append(`size`, a));
+    selectedAvailability.forEach((a) => params.append(`stock`, a));
 
     router.push(`/shop?${params.toString()}`);
 
@@ -89,11 +96,25 @@ const SidebarShopAccordion = function ({
     minPrice,
     selectedMinPrice,
     selectedMaxPrice,
+    selectedAvailability,
+    selectedSale,
   ]);
+
+  const handleClearFilters = function () {
+    setSelectedSale("");
+    setSelectedBrand([]);
+    setSelectedCategory([]);
+    setSelectedColour([]);
+    setSelectedSize([]);
+    setSelectedAvailability([]);
+    router.push(`/shop`);
+  };
 
   console.log(selectedCategory, `this is for selectedcategory`);
   console.log(selectedColour, `for selectedColour`);
   console.log(selectedSize, `for selectedSize`);
+  console.log(selectedAvailability, `for selectedAvailability`);
+  console.log(selectedSale, `for selectedSale`);
 
   return (
     <Accordion
@@ -354,11 +375,26 @@ const SidebarShopAccordion = function ({
                     key={a}
                   >
                     <Checkbox
+                      value={a}
+                      checked={selectedAvailability.includes(a)}
+                      onCheckedChange={(checked) =>
+                        checked
+                          ? setSelectedAvailability((sneakerStock) => [
+                              ...sneakerStock,
+                              a,
+                            ])
+                          : setSelectedAvailability((sneakerAvailability) =>
+                              sneakerAvailability.filter(
+                                (filterSneakerStock) =>
+                                  filterSneakerStock !== a,
+                              ),
+                            )
+                      }
                       id="availability"
                       name="availability" /* defaultChecked */
                     />
                     <FieldLabel
-                      htmlFor="availability"
+                      htmlFor={`availability-${a}`}
                       className={`text-(--color-text-secondary)`}
                     >
                       {a}
@@ -374,7 +410,10 @@ const SidebarShopAccordion = function ({
                 Select Sale
               </FieldDescription>
 
-              <RadioGroup>
+              <RadioGroup
+                value={selectedSale}
+                onValueChange={(value) => setSelectedSale(value)}
+              >
                 {sale.map((a) => (
                   <Field
                     orientation="horizontal"

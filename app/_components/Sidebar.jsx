@@ -8,7 +8,7 @@ import { Skeleton } from "./UI/skeleton";
 import SidebarShopAccordion from "./SidebarShopAccordion";
 import SidebarShopAccordionSkeleton from "./SidebarShopAccordionSkeleton";
 import { selectPriceRange } from "../_lib/selectPriceRange";
-import { useParams, useSearchParams } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 
 const Sidebar = function ({ className = "" }) {
   const search = useSearchParams();
@@ -21,7 +21,30 @@ const Sidebar = function ({ className = "" }) {
   const { minPrice, maxPrice } = selectPriceRange(sneaker);
   const [priceRange, setPriceRange] = useState([minPrice, maxPrice]);
 
+  //Filtering
+  const [selectedBrand, setSelectedBrand] = useState(() =>
+    search.getAll(`brand`),
+  );
+  const [selectedCategory, setSelectedCategory] = useState(() =>
+    search.getAll(`category`),
+  );
+  const [selectedColour, setSelectedColour] = useState(() =>
+    search.getAll(`colour`),
+  );
+  const [selectedSize, setSelectedSize] = useState(() =>
+    search.getAll(`size`).map((a) => +a),
+  );
+
+  const [selectedAvailability, setSelectedAvailability] = useState(() =>
+    search.getAll(`stock`),
+  );
+
+  const [selectedSale, setSelectedSale] = useState(
+    () => search.get(`sale`) ?? "",
+  );
+
   const sidebarRef = useRef(null);
+  const router = useRouter();
   const urlQueryString = search.toString();
 
   useEffect(() => {
@@ -73,6 +96,16 @@ const Sidebar = function ({ className = "" }) {
     .sort((a, b) => a - b);
   const size = [...new Set(sneakerSizes.map((a) => a))];
   const availability = [...new Set(sneaker.map((a) => a.stock))];
+
+  const handleClearFilters = function () {
+    setSelectedSale("");
+    setSelectedBrand([]);
+    setSelectedCategory([]);
+    setSelectedColour([]);
+    setSelectedSize([]);
+    setSelectedAvailability([]);
+    router.push(`/shop`);
+  };
 
   return (
     <aside
@@ -148,7 +181,9 @@ const Sidebar = function ({ className = "" }) {
               <p className="flex">
                 FILTERS <ArrowDownWideNarrow />
               </p>
-              <p>Clear</p>
+              <p onClick={handleClearFilters} className="cursor-pointer">
+                Clear
+              </p>
             </div>
           )}
         </>
@@ -171,6 +206,18 @@ const Sidebar = function ({ className = "" }) {
             minPrice={minPrice}
             maxPrice={maxPrice}
             availability={availability}
+            setSelectedSale={setSelectedSale}
+            setSelectedBrand={setSelectedBrand}
+            setSelectedCategory={setSelectedCategory}
+            setSelectedColour={setSelectedColour}
+            setSelectedSize={setSelectedSize}
+            setSelectedAvailability={setSelectedAvailability}
+            selectedSale={selectedSale}
+            selectedBrand={selectedBrand}
+            selectedCategory={selectedCategory}
+            selectedColour={selectedColour}
+            selectedSize={selectedSize}
+            selectedAvailability={selectedAvailability}
           />
         </div>
       )}
