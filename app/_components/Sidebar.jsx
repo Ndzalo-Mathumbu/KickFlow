@@ -9,9 +9,11 @@ import SidebarShopAccordion from "./SidebarShopAccordion";
 import SidebarShopAccordionSkeleton from "./SidebarShopAccordionSkeleton";
 import { selectPriceRange } from "../_lib/selectPriceRange";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { useShopStore } from "../_lib/Stores/shop-store";
 
 const Sidebar = function ({ className = "" }) {
   const search = useSearchParams();
+
   const [sidebarWidth, setSidebarWidth] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingKickFlowIcon, setIsLoadingKickFlowIcon] = useState(true);
@@ -43,6 +45,8 @@ const Sidebar = function ({ className = "" }) {
     () => search.get(`sale`) ?? "",
   );
 
+  const setSneakers = useShopStore((state) => state.setSneakers);
+
   const sidebarRef = useRef(null);
   const router = useRouter();
   const urlQueryString = search.toString();
@@ -67,6 +71,7 @@ const Sidebar = function ({ className = "" }) {
       const data = await res.json();
 
       setSneaker(data);
+      if (!urlQueryString) setSneakers(data);
       setIsLoading(false);
     };
 
@@ -76,12 +81,13 @@ const Sidebar = function ({ className = "" }) {
       const data = await res.json();
 
       setFilteredSneaker(data);
+      setSneakers(data);
       setIsLoading(false);
     };
     urlQueryString ? getFilteredProductsData() : setFilteredSneaker([]);
     getProductsData();
     return () => observer.disconnect();
-  }, [urlQueryString]);
+  }, [urlQueryString, setSneakers]);
 
   console.log(sneaker, `Not filtered Sneaker`);
   console.log(filteredSneaker, `filtered sneaker`);
