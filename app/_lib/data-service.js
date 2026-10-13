@@ -112,6 +112,7 @@ export const getProducts = async function (
   max_Price,
   stock = [],
   sale = `All`,
+  searchedSneaker,
 ) {
   const where = {};
 
@@ -194,4 +195,15 @@ export const getProducts = async function (
     const products = await prisma.product.findMany();
     return products;
   }
+  /*  if (searchedSneaker) {
+    const sneaker = await prisma.product.findMany({
+      where: {
+        brand: { contains: searchedSneaker, mode: "insensitive" },
+      },
+    });
+    if (!sneaker) {
+      return `Sneaker Not Found`;
+    }
+    return sneaker;
+  } */
 };
