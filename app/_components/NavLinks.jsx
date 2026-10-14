@@ -8,7 +8,6 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import Search from "./Searchbar";
 import { AccountDropDownMenu } from "./AccountDropdown";
 import { useState } from "react";
 import Image from "next/image";

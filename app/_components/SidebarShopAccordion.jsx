@@ -21,6 +21,7 @@ import { Label } from "./UI/label";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { check } from "zod";
+import { Autocomplete } from "@base-ui/react";
 
 const SidebarShopAccordion = function ({
   brands,
@@ -130,9 +131,11 @@ const SidebarShopAccordion = function ({
         )}
         <AccordionContent className="text-(--color-text-secondary)">
           <Search
+            useAutocomplete={true}
             placeholder="Search brands..."
             className={`w-full p-1 bg-(--color-input-background) border-(color-input-border) border text-(--color-input-text) placeholder:text-(--color-input-placeholder) focus:ring-0 focus:outline-none rounded-sm `}
           />
+
           <FieldSet className="">
             <FieldGroup className="gap-3 ">
               <FieldDescription className="pt-4 text-(--color-text-muted) ">
@@ -186,6 +189,7 @@ const SidebarShopAccordion = function ({
         <AccordionTrigger className="text-lg">Categories</AccordionTrigger>
         <AccordionContent className="text-(--color-text-secondary)">
           <Search
+            useAutocomplete={true}
             placeholder="Search brands..."
             className={`w-full p-1 bg-(--color-input-background) border-(color-input-border) border text-(--color-input-text) placeholder:text-(--color-input-placeholder) focus:ring-0 focus:outline-none rounded-sm `}
           />
@@ -235,6 +239,7 @@ const SidebarShopAccordion = function ({
         <AccordionTrigger className="text-lg">Colour</AccordionTrigger>
         <AccordionContent className="text-(--color-text-secondary)">
           <Search
+            useAutocomplete={true}
             placeholder="Search brands..."
             className={`w-full p-1 bg-(--color-input-background) border-(color-input-border) border text-(--color-input-text) placeholder:text-(--color-input-placeholder) focus:ring-0 focus:outline-none rounded-sm `}
           />
@@ -285,6 +290,7 @@ const SidebarShopAccordion = function ({
         <AccordionTrigger className="text-lg">Size</AccordionTrigger>
         <AccordionContent className="text-(--color-text-secondary)">
           <Search
+            useAutocomplete={true}
             placeholder="Search brands..."
             className={`w-full p-1 bg-(--color-input-background) border-(color-input-border) border text-(--color-input-text) placeholder:text-(--color-input-placeholder) focus:ring-0 focus:outline-none rounded-sm `}
           />

@@ -2,7 +2,7 @@
 import { usePathname } from "next/navigation";
 import Logo from "./Logo";
 import Navigation from "./Navigation";
-import Search from "./Searchbar";
+import Searchbar from "./Searchbar";
 
 const Header = function ({ className = "" }) {
   const pathName = usePathname();
@@ -17,11 +17,14 @@ const Header = function ({ className = "" }) {
       {pathName !== "/" || <Logo />}
       {/* <Logo /> */}
       {pathName !== "/" && (
-        <Search
-          searchIconHover="hover:scale-105 transition-transform duration-200"
-          placeholder="Search..."
-          className={`w-[28vw] p-1 bg-(--color-input-background) border-(color-input-border) border text-(--color-input-text) placeholder:text-(--color-input-placeholder)  focus:ring-0 focus:outline-none rounded-sm `}
-        />
+        <>
+          <Searchbar
+            useAutocomplete={true}
+            searchIconHover="hover:scale-105 transition-transform duration-200"
+            placeholder="Search..."
+            className={`w-[28vw] p-1 bg-(--color-input-background) border-(color-input-border) border text-(--color-input-text) placeholder:text-(--color-input-placeholder)  focus:ring-0 focus:outline-none rounded-sm `}
+          />
+        </>
       )}
       <Navigation />
     </header>
