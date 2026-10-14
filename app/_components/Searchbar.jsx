@@ -80,13 +80,15 @@ const Search = function ({
                         className="border-b-2 border-(--color-border-strong) py-2 px-5 hover:scale-105 hover:bg-(--color-border-strong) transition-all duration-200 ease-in-out cursor-pointer"
                       >
                         {/* The text displayed for this suggestion. */}
-                        {/*  <Image
-                          alt={`${sneaker.name} IMG`}
-                          src={sneaker.image.at(0)}
-                          width={15}
-                          height={15}
-                        /> */}
-                        {sneaker.name}
+                        <div className="flex gap-4">
+                          <Image
+                            alt={`${sneaker.name} IMG`}
+                            src={sneaker.image.at(0)}
+                            width={30}
+                            height={30}
+                          />
+                          {sneaker.name}
+                        </div>
                       </Autocomplete.Item>
                     )}
                   </Autocomplete.List>
