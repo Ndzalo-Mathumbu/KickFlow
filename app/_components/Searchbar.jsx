@@ -6,7 +6,8 @@ import { useEffect, useState } from "react";
 
 const Search = function ({
   useAutocomplete = false,
-  useAutocompleteRoot = false,
+  useSidebarSearchbars = false,
+  sidebarAccordionAutocomplete,
   className,
   placeholder,
   searchIconHover,
@@ -38,7 +39,20 @@ const Search = function ({
   }, [findSenaker]);
 
   const Input = useAutocomplete ? Autocomplete.Input : "input";
-  // const AutocompleteRoot = useAutocompleteRoot ? Autocomplete.Root : "";
+  //  const sidebarSearchWindow = useSidebarSearchbars&&
+
+  const seenAutocompleteLabels = new Set();
+  const uniqueSneakerAutocomplete = sneakerAutocomplete.filter((sneaker) => {
+    const label = useSidebarSearchbars ? sneaker.brand : sneaker.name;
+    const normalizedLabel = label?.trim().toLocaleLowerCase();
+
+    if (!normalizedLabel || seenAutocompleteLabels.has(normalizedLabel)) {
+      return false;
+    }
+
+    seenAutocompleteLabels.add(normalizedLabel);
+    return true;
+  });
 
   return (
     <>
@@ -47,7 +61,7 @@ const Search = function ({
           <SearchIcon
             className={`absolute left-3 top-1/2 -translate-y-1/2 text-(--color-surface-secondaryTwo) w-4 h-4`}
           />
-          <Autocomplete.Root items={sneakerAutocomplete}>
+          <Autocomplete.Root items={uniqueSneakerAutocomplete}>
             {/* The field where the user types their search. */}
 
             <Input
@@ -62,10 +76,22 @@ const Search = function ({
               {/* Positions the dropdown relative to the input. */}
               <Autocomplete.Positioner
                 sideOffset={4}
-                className=" bg-(--color-surface-card) text-(--color-text-secondary) w-[28vw]  max-h-40  h-auto overflow-y-auto overflow-x-hidden rounded-sm  py-1.5"
+                side="bottom"
+                collisionAvoidance={{
+                  side: "none",
+                  align: "none",
+                  fallbackAxisSide: "none",
+                }}
+                className={
+                  useSidebarSearchbars
+                    ? `${sidebarAccordionAutocomplete} bg-(--color-surface-card)`
+                    : `bg-(--color-surface-card) text-(--color-text-secondary) w-[28vw]  max-h-40  h-auto overflow-y-auto overflow-x-hidden rounded-sm  py-1.5 `
+                }
               >
                 {/* The visible dropdown containing the suggestions. */}
-                <Autocomplete.Popup>
+                <Autocomplete.Popup
+                  className={useSidebarSearchbars ? "w-full" : undefined}
+                >
                   {/* Displayed when no options match the user's search. */}
                   <Autocomplete.Empty>
                     <div>No results found.</div>
@@ -87,7 +113,7 @@ const Search = function ({
                             width={30}
                             height={30}
                           />
-                          {sneaker.name}
+                          {useSidebarSearchbars ? sneaker.brand : sneaker.name}
                         </div>
                       </Autocomplete.Item>
                     )}

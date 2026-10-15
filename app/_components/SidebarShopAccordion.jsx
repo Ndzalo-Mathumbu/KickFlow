@@ -132,6 +132,8 @@ const SidebarShopAccordion = function ({
         <AccordionContent className="text-(--color-text-secondary)">
           <Search
             useAutocomplete={true}
+            useSidebarSearchbars={true}
+            sidebarAccordionAutocomplete="w-[var(--anchor-width)] h-auto max-h-[34vh] overflow-y-auto overflow-x-hidden"
             placeholder="Search brands..."
             className={`w-full p-1 bg-(--color-input-background) border-(color-input-border) border text-(--color-input-text) placeholder:text-(--color-input-placeholder) focus:ring-0 focus:outline-none rounded-sm `}
           />

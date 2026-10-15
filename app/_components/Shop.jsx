@@ -73,7 +73,7 @@ import { useShopStore } from "../_lib/Stores/shop-store";
 import { useSearchParams } from "next/navigation";
 
 const Shop = function () {
-  const search = useSearchParams(window.location.search);
+  const search = useSearchParams();
 
   const numFilters =
     search.getAll(`brand`).length +
