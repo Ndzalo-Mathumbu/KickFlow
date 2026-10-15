@@ -8,13 +8,13 @@ const Search = function ({
   useAutocomplete = false,
   useSidebarSearchbars = false,
   sidebarAccordionAutocomplete,
+  sidebarAccordionName,
   className,
   placeholder,
   searchIconHover,
 }) {
   const [findSenaker, setFindSneaker] = useState("");
   const [sneakerAutocomplete, setSneakerAutocomplete] = useState([]);
-
   console.log(findSenaker);
 
   useEffect(() => {
@@ -43,8 +43,10 @@ const Search = function ({
 
   const seenAutocompleteLabels = new Set();
   const uniqueSneakerAutocomplete = sneakerAutocomplete.filter((sneaker) => {
-    const label = useSidebarSearchbars ? sneaker.brand : sneaker.name;
-    const normalizedLabel = label?.trim().toLocaleLowerCase();
+    const label = useSidebarSearchbars
+      ? sneaker[sidebarAccordionName]
+      : sneaker.name;
+    const normalizedLabel = label?.trim().toLowerCase();
 
     if (!normalizedLabel || seenAutocompleteLabels.has(normalizedLabel)) {
       return false;
@@ -111,9 +113,11 @@ const Search = function ({
                             alt={`${sneaker.name} IMG`}
                             src={sneaker.image.at(0)}
                             width={30}
-                            height={30}
+                            height={28}
                           />
-                          {useSidebarSearchbars ? sneaker.brand : sneaker.name}
+                          {useSidebarSearchbars
+                            ? sneaker[sidebarAccordionName]
+                            : sneaker.name}
                         </div>
                       </Autocomplete.Item>
                     )}
