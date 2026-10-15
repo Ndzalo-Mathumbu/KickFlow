@@ -1,6 +1,6 @@
 "use client";
 import { Autocomplete } from "@base-ui/react";
-import { SearchIcon } from "lucide-react";
+import { Bookmark, BookMarked, SaveIcon, SearchIcon } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
@@ -108,7 +108,7 @@ const Search = function ({
                         className="border-b-2 border-(--color-border-strong) py-2 px-5 hover:scale-105 hover:bg-(--color-border-strong) transition-all duration-200 ease-in-out cursor-pointer"
                       >
                         {/* The text displayed for this suggestion. */}
-                        <div className="flex gap-4">
+                        <div className="flex gap-4 items-center w-full">
                           <Image
                             alt={`${sneaker.name} IMG`}
                             src={sneaker.image.at(0)}
@@ -118,6 +118,9 @@ const Search = function ({
                           {useSidebarSearchbars
                             ? sneaker[sidebarAccordionName]
                             : sneaker.name}
+                          {!sneaker[sidebarAccordionName] && (
+                            <Bookmark className="ml-auto w-5 h-5" />
+                          )}
                         </div>
                       </Autocomplete.Item>
                     )}
